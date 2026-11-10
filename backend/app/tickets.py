@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 
 import httpx
@@ -12,7 +12,7 @@ from app.models import Ticket, TicketOrderReference
 from app.orders import ticket_read
 from app.workflow_common import audit
 from app.workflow_models import TicketWorkflow
-from app.schemas import Priority, TicketCounts, TicketCreate, TicketPage, TicketRead, TicketStatus
+from app.schemas import Category, Priority, TicketCounts, TicketCreate, TicketPage, TicketRead, TicketStatus
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"])
 
@@ -53,9 +53,19 @@ def list_tickets(
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     search: str | None = None,
+    category: Category | Literal[""] | None = None,
+    priority: Priority | Literal[""] | None = None,
+    status: TicketStatus | Literal[""] | None = None,
 ):
     term = (search or "").strip()
+    current_status = func.coalesce(TicketWorkflow.status, Ticket.status)
     conditions = []
+    if category:
+        conditions.append(Ticket.category == category)
+    if priority:
+        conditions.append(Ticket.priority == priority)
+    if status:
+        conditions.append(current_status == status)
     if term:
         conditions.append(or_(
             Ticket.message.icontains(term, autoescape=True),
@@ -69,10 +79,10 @@ def list_tickets(
             return session.exec(select(func.count(Ticket.id)).outerjoin(TicketWorkflow, TicketWorkflow.ticket_id == Ticket.id).where(*conditions, *extra_conditions)).one()
 
         counts = TicketCounts(
-            total=count(), new=count(func.coalesce(TicketWorkflow.status, Ticket.status) == TicketStatus.new),
+            total=count(), new=count(current_status == TicketStatus.new),
             high=count(Ticket.priority == Priority.high), urgent=count(Ticket.priority == Priority.urgent),
         )
-        tickets = session.exec(select(Ticket).where(*conditions).order_by(Ticket.created_at.desc(), Ticket.id.desc()).offset(offset).limit(limit)).all()
+        tickets = session.exec(select(Ticket).outerjoin(TicketWorkflow, TicketWorkflow.ticket_id == Ticket.id).where(*conditions).order_by(Ticket.created_at.desc(), Ticket.id.desc()).offset(offset).limit(limit)).all()
         return TicketPage(items=[ticket_read(session, ticket) for ticket in tickets], counts=counts, limit=limit, offset=offset)
 
 
