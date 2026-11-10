@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { checkConnection, type Connection } from './api'
+import TicketDashboard from './TicketDashboard'
 
 const initial: Connection = { state: 'checking', message: 'Checking connection…' }
 
@@ -72,11 +73,11 @@ export default function App() {
         </div>
       </header>
       <main className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
-        <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">Workspace setup</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">Customer support workspace</p>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">System status</h1>
-            <p className="mt-3 max-w-xl text-base leading-7 text-slate-500">Your foundation for local AI customer support. Check that your services are ready.</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Support dashboard</h1>
+            <p className="mt-3 max-w-xl text-base leading-7 text-slate-500">Understand every customer message. Classify, prioritize, and review tickets with AI running locally.</p>
           </div>
           <button type="button" disabled={refreshing} onClick={() => { setRefreshing(true); setRefreshKey(key => key + 1) }}
             className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600 disabled:cursor-wait disabled:opacity-60">
@@ -88,10 +89,7 @@ export default function App() {
           <StatusCard title="Local AI" subtitle="Ollama" connection={ollama} />
         </div>
         <p className="mt-5 text-xs text-slate-500">{checkedAt ? `Last checked at ${checkedAt.toLocaleTimeString()}. ` : ''}Refreshes automatically 15 seconds after each check.</p>
-        <aside className="mt-10 rounded-xl border border-dashed border-slate-300 p-5 text-sm leading-6 text-slate-500">
-          <p className="font-medium text-slate-700">A local foundation, ready to build on.</p>
-          <p className="mt-1">This setup checks connectivity and model availability. Ticket classification and AI generation are not enabled yet.</p>
-        </aside>
+        <TicketDashboard />
       </main>
     </div>
   )

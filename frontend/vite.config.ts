@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
   return {
     envDir,
     plugins: [react(), tailwindcss()],
-    server: { proxy: { '/api': { target: backend, changeOrigin: true } } },
-    preview: { proxy: { '/api': { target: backend, changeOrigin: true } } },
+    server: { proxy: { '/api': { target: backend, changeOrigin: true, proxyTimeout: 315000 } } },
+    preview: { proxy: { '/api': { target: backend, changeOrigin: true, proxyTimeout: 315000 } } },
   }
 })

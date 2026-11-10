@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 from urllib.parse import urlsplit
 
 from pydantic import Field, field_validator
@@ -13,8 +14,9 @@ class Settings(BaseSettings):
     )
 
     ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = Field(default="qwen3.5:9b", min_length=1)
+    ollama_model: Literal["qwen3.5:9b"] = "qwen3.5:9b"
     ollama_timeout_seconds: float = Field(default=5, gt=0, le=30)
+    classification_timeout_seconds: float = Field(default=120, ge=10, le=300)
     database_path: Path = Path("data/opspilot.db")
 
     @field_validator("ollama_base_url")

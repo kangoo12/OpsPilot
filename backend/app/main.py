@@ -1,13 +1,17 @@
+import asyncio
 from contextlib import asynccontextmanager
 from typing import Annotated, Literal
 
 import httpx
 from fastapi import Depends, FastAPI, Request, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import SQLModel
 
 from app.config import Settings
 from app.database import check_database, create_database_engine
+from app.tickets import get_ollama_client, router as tickets_router
 
 
 class BackendHealth(BaseModel):
@@ -30,10 +34,6 @@ class OllamaTags(BaseModel):
     models: list[InstalledModel]
 
 
-def get_ollama_client(request: Request) -> httpx.AsyncClient:
-    return request.app.state.ollama_client
-
-
 def create_app(settings: Settings | None = None) -> FastAPI:
     config = settings or Settings()
 
@@ -42,6 +42,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         engine = create_database_engine(config.database_path)
         app.state.engine = engine
         try:
+            SQLModel.metadata.create_all(engine)
+            app.state.settings = config
+            app.state.classification_lock = asyncio.Lock()
             # Ignore proxy settings and redirects so all Ollama requests stay local.
             async with httpx.AsyncClient(
                 base_url=config.ollama_base_url,
@@ -54,7 +57,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             engine.dispose()
 
-    app = FastAPI(title="OpsPilot API", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="OpsPilot API", version="0.2.0", lifespan=lifespan)
+    app.include_router(tickets_router)
+
+    @app.exception_handler(SQLAlchemyError)
+    async def database_error(request: Request, exc: SQLAlchemyError):
+        return JSONResponse(status_code=503, content={"detail": {
+            "code": "database_unavailable",
+            "message": "Local ticket storage is unavailable. Check the backend and refresh the ticket list before retrying.",
+        }})
 
     @app.get("/api/health", response_model=BackendHealth)
     def health(request: Request, response: Response):

@@ -5,15 +5,7 @@ from pydantic import ValidationError
 from sqlalchemy.exc import OperationalError
 
 from app.config import PROJECT_ROOT, Settings
-from app.main import create_app, get_ollama_client
-
-
-@pytest.fixture
-def app(tmp_path, monkeypatch):
-    # Isolate tests from developer environment variables and the real .env.
-    for key in ("OLLAMA_BASE_URL", "OLLAMA_MODEL", "OLLAMA_TIMEOUT_SECONDS", "DATABASE_PATH"):
-        monkeypatch.delenv(key, raising=False)
-    return create_app(Settings(_env_file=None, database_path=tmp_path / "test.db"))
+from app.main import get_ollama_client
 
 
 def mock_ollama(app, handler):
