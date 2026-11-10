@@ -109,4 +109,15 @@ describe('ticket requests', () => {
     await listTickets(0, undefined, '   ')
     expect(mock.mock.calls[1][0]).toBe('/api/tickets?limit=20&offset=0')
   })
+
+  it('sends combined filters with search and pagination and omits All values', async () => {
+    const mock = respond({})
+    await listTickets(20, undefined, 'parcel', { category: 'delivery', priority: 'high', status: 'in_progress' })
+    const url = new URL(mock.mock.calls[0][0], 'http://localhost')
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      limit: '20', offset: '20', search: 'parcel', category: 'delivery', priority: 'high', status: 'in_progress',
+    })
+    await listTickets(0, undefined, '', { category: '', priority: '', status: '' })
+    expect(mock.mock.calls[1][0]).toBe('/api/tickets?limit=20&offset=0')
+  })
 })

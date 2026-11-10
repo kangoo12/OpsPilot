@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { createTicket, getTicket, listTickets, MAX_MESSAGE_LENGTH, statusLabels, type Category, type Priority, type Ticket, type TicketPage } from './api'
+import { categories, priorities, createTicket, getTicket, listTickets, MAX_MESSAGE_LENGTH, statusLabels, type Category, type Priority, type Ticket, type TicketPage, type TicketFilters } from './api'
 import TicketSupport from './TicketSupport'
 
 const categoryLabels: Record<Category, string> = {
@@ -54,6 +54,8 @@ export default function TicketDashboard() {
   const [offset, setOffset] = useState(0)
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [filters, setFilters] = useState<TicketFilters>({})
+  const hasFilters = Object.values(filters).some(Boolean)
   const searchTerm = search.trim()
   const [revision, setRevision] = useState(0)
   const [listLoading, setListLoading] = useState(true)
@@ -83,7 +85,7 @@ export default function TicketDashboard() {
     setListError('')
     if (searchTerm !== debouncedSearch) return
     const controller = new AbortController()
-    void listTickets(offset, controller.signal, debouncedSearch).then(result => {
+    void listTickets(offset, controller.signal, debouncedSearch, filters).then(result => {
       if (controller.signal.aborted) return
       if (offset > 0 && result.items.length === 0) { setOffset(0); return }
       setPage(result)
@@ -91,7 +93,7 @@ export default function TicketDashboard() {
       if (!controller.signal.aborted) setListError(errorMessage(error))
     }).finally(() => { if (!controller.signal.aborted) setListLoading(false) })
     return () => controller.abort()
-  }, [offset, revision, searchTerm, debouncedSearch])
+  }, [offset, revision, searchTerm, debouncedSearch, filters])
 
   useEffect(() => {
     if (!selectedId) return
@@ -180,11 +182,30 @@ export default function TicketDashboard() {
               {search && <button type="button" onClick={() => setSearch('')} className={secondaryButton}>Clear search</button>}
             </div>
             <p id="ticket-search-help" className="mt-2 text-xs text-slate-500">Search customer messages, order IDs and customer intent.</p>
-            {!listLoading && !listError && page && <p role="status" className="mt-2 text-xs text-slate-500">{page.counts.total} {debouncedSearch ? 'matching tickets' : 'tickets'}</p>}
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {([
+                ['category', 'Category', categories.map(value => [value, categoryLabels[value]])],
+                ['priority', 'Priority', priorities.map(value => [value, value[0].toUpperCase() + value.slice(1)])],
+                ['status', 'Status', Object.entries(statusLabels)],
+              ] as const).map(([key, label, options]) => (
+                <label key={key} className="min-w-0 text-xs font-medium text-slate-700">
+                  {label}
+                  <select value={filters[key] ?? ''} onChange={event => {
+                    setOffset(0)
+                    setFilters(current => ({ ...current, [key]: event.target.value }))
+                  }} className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-2 py-2 text-sm text-slate-800 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                    <option value="">All</option>
+                    {options.map(([value, text]) => <option key={value} value={value}>{text}</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+            {hasFilters && <button type="button" onClick={() => { setOffset(0); setFilters({}) }} className={`mt-3 ${secondaryButton}`}>Clear filters</button>}
+            {!listLoading && !listError && page && <p role="status" className="mt-2 text-xs text-slate-500">{page.counts.total} {debouncedSearch || hasFilters ? 'matching tickets' : 'tickets'}</p>}
           </div>
           {listError && <p role="alert" className="m-5 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">{listError} {page ? 'Showing the last loaded tickets and counts.' : ''}</p>}
           {listLoading && <p role="status" className="p-6 text-sm text-slate-500">Loading tickets…</p>}
-          {!listLoading && !listError && page?.items.length === 0 && <p className="p-8 text-center text-sm leading-6 text-slate-500">{debouncedSearch ? 'No results found. Try another search or clear the search.' : 'No tickets yet. Submit a customer message to get started.'}</p>}
+          {!listLoading && !listError && page?.items.length === 0 && <p className="p-8 text-center text-sm leading-6 text-slate-500">{debouncedSearch || hasFilters ? 'No results found. Try another search or clear the search and filters.' : 'No tickets yet. Submit a customer message to get started.'}</p>}
           <ul aria-label="Saved tickets" className="divide-y divide-slate-100">
             {page?.items.map(ticket => (
               <li key={ticket.id}>

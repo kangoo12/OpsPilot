@@ -107,9 +107,14 @@ export function createTicket(message: string): Promise<Ticket> {
   })
 }
 
-export function listTickets(offset = 0, signal?: AbortSignal, search = ''): Promise<TicketPage> {
+export type TicketFilters = { category?: Category | ''; priority?: Priority | ''; status?: TicketStatus | '' }
+
+export function listTickets(offset = 0, signal?: AbortSignal, search = '', filters: TicketFilters = {}): Promise<TicketPage> {
   const query = new URLSearchParams({ limit: '20', offset: String(offset) })
   if (search.trim()) query.set('search', search.trim())
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) query.set(key, value)
+  }
   return ticketRequest(`/api/tickets?${query}`, { signal })
 }
 
