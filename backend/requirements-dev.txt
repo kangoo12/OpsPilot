@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest>=8.3,<10
+# Current Starlette TestClient uses httpx2; application Ollama calls use httpx.
+httpx2>=2.16,<3
