@@ -9,6 +9,9 @@ from sqlmodel import Session, select
 from app.models import Order, Ticket, TicketOrderReference
 from app.consistency import check_consistency
 from app.schemas import TicketRead
+from app.schemas import TicketStatus
+from app.workflow_common import audit, conflict, fingerprint
+from app.workflow_models import TicketWorkflow
 from app.support_schemas import OrderLookup, OrderRead, OrderReferenceUpdate, TicketOrderLookup
 
 # Fixed snapshot: stable fixtures, never represented as live carrier data.
@@ -70,19 +73,24 @@ def ticket_order_context(session: Session, ticket: Ticket) -> TicketOrderLookup:
     manual = session.get(TicketOrderReference, ticket.id)
     reference = manual.order_id if manual else ticket.order_id
     lookup = lookup_order(session, reference)
-    return TicketOrderLookup(
+    result = TicketOrderLookup(
         **lookup.model_dump(), extracted_order_id=ticket.order_id,
         source="manual" if manual else "extracted",
         consistency=check_consistency(ticket.message, lookup.order, reference),
     )
+    result.context_fingerprint = fingerprint(result)
+    return result
 
 
 def ticket_read(session: Session, ticket: Ticket) -> TicketRead:
     # Derived on read; never rewrites the ticket, its status or historical text.
     context = ticket_order_context(session, ticket)
     result = TicketRead.model_validate(ticket)
+    state = session.get(TicketWorkflow, ticket.id)
     return result.model_copy(update={"requires_human_review": context.consistency.requires_human_review,
-                                     "consistency": context.consistency})
+                                     "consistency": context.consistency,
+                                     "status": TicketStatus(state.status) if state else ticket.status,
+                                     "workflow_version": state.version if state else 1})
 
 
 router = APIRouter(tags=["orders"])
@@ -113,8 +121,14 @@ def get_ticket_order(ticket_id: UUID, request: Request):
 @router.put("/api/tickets/{ticket_id}/order", response_model=TicketOrderLookup)
 def correct_ticket_order(ticket_id: UUID, body: OrderReferenceUpdate, request: Request):
     with Session(request.app.state.engine) as session:
+        session.connection().exec_driver_sql("BEGIN IMMEDIATE")
         ticket = require_ticket(session, ticket_id)
+        previous = ticket_order_context(session, ticket)
+        if body.expected_context_fingerprint and body.expected_context_fingerprint != fingerprint(previous):
+            conflict("The order reference changed. Refresh before correcting it.")
         session.execute(insert(TicketOrderReference).values(ticket_id=ticket_id, order_id=body.order_id)
                         .on_conflict_do_update(index_elements=["ticket_id"], set_={"order_id": body.order_id}))
+        audit(session, ticket_id, "order_reference_corrected", data={"previous": previous.reference_order_id, "new": body.order_id,
+                                                                   "original_extraction_preserved": True})
         session.commit()
         return ticket_order_context(session, ticket)

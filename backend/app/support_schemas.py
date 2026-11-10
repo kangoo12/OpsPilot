@@ -29,11 +29,13 @@ class TicketOrderLookup(OrderLookup):
     extracted_order_id: str | None
     source: Literal["extracted", "manual"]
     consistency: ConsistencyCheck = Field(default_factory=ConsistencyCheck)
+    context_fingerprint: str = ""
 
 
 class OrderReferenceUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     order_id: str | None = Field(max_length=65)
+    expected_context_fingerprint: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
 
     @field_validator("order_id")
     @classmethod
@@ -53,16 +55,30 @@ class DraftRead(BaseModel):
     ticket_id: UUID
     reply_text: str
     language: Literal["en", "el"]
-    status: Literal["pending_review"]
+    status: Literal["pending_review", "approved", "rejected"]
     model: Literal["qwen3.5:9b"]
     order_context: TicketOrderLookup
     policy_version: str
     created_at: datetime
     snapshot_consistency: ConsistencyCheck = Field(default_factory=ConsistencyCheck)
+    original_content: str = ""
+    version: int = 1
+    updated_at: datetime | None = None
+    approved_at: datetime | None = None
+    rejected_at: datetime | None = None
+    reviewer: str | None = None
+    rejection_reason: str | None = None
+    parent_draft_id: UUID | None = None
+    origin: str = "ai"
+    revision_count: int = 1
+    approval_blockers: list[str] = Field(default_factory=list)
+    review_context: TicketOrderLookup | None = None
 
-    @field_validator("created_at")
+    @field_validator("created_at", "updated_at", "approved_at", "rejected_at")
     @classmethod
-    def utc_timestamp(cls, value: datetime) -> datetime:
+    def utc_timestamp(cls, value: datetime | None) -> datetime | None:
+        if value is None:
+            return None
         return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value
 
 

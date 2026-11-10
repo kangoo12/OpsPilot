@@ -1,8 +1,9 @@
 # OpsPilot
 
-Local AI customer support automation. Milestone 3A includes Greek/English message
-classification, persistent tickets, verified synthetic order lookup and grounded
-reply drafts in the existing React/FastAPI dashboard. Inference uses local
+Local AI customer support automation. Milestone 3B adds human draft review,
+immutable approvals, revision history, ticket statuses and an audit timeline to
+Greek/English classification, verified synthetic orders and grounded replies.
+Inference uses local
 `qwen3.5:9b` exclusively.
 
 Paste a message, select **Classify & save ticket**, and review the saved ticket's
@@ -10,7 +11,9 @@ category, priority, order ID (when explicitly referenced), intent, and reason.
 The dashboard includes service health, counts, a paginated ticket list, refresh,
 and individual ticket details. Each ticket starts with status `new`. Select a ticket
 to inspect its order, correct the order reference, and generate a suggested reply.
-Every saved reply stays `pending_review`; nothing is approved, sent or executed.
+Every generated reply starts `pending_review`. Operators can edit, approve, reject,
+or regenerate it. Approval sends nothing and does not resolve a ticket. Ticket
+status changes are separate, explicit operator actions.
 
 All AI connections stay on this computer. There are no cloud inference APIs,
 external fonts, analytics, or paid services. Dependency installation needs internet
@@ -42,6 +45,7 @@ OpsPilot/
     src/                 # React dashboard, API client, unit/component tests
     scripts/smoke.mjs     # Real browser + local model smoke test
     scripts/smoke3a.mjs   # Order lookup, corrections, reply generation and persistence
+    scripts/smoke3b.mjs   # Isolated human-review/status/audit browser verification
     package.json
     vite.config.ts
     tsconfig.json
@@ -133,8 +137,8 @@ the development server and `npm.cmd run preview` include this proxy. Serving
 `dist` from a different host requires an equivalent `/api` proxy.
 
 Ollama requests ignore HTTP proxy environment variables and never follow redirects.
-SQLite and the ticket, order, order-reference and reply-draft tables are created at backend startup with SQLModel's
-`create_all`. This is additive: existing records are preserved. Classification
+SQLite schema and additive workflow migrations run at backend startup. Existing
+ticket, order and original AI-draft rows remain intact. Classification
 does not hold a database transaction open while waiting for Ollama.
 
 ## Classification and tickets
@@ -235,14 +239,116 @@ chosen from the original message using a letter-count heuristic; mixed-language
 edge cases still need human review.
 
 Drafts store their order snapshot, policy version, model and UTC timestamp. They
-all remain `pending_review`. The UI shows the latest 20 drafts with a history selector.
+start `pending_review`; current human decisions are stored separately from those
+original snapshots. The UI shows the latest 20 drafts with a history selector.
 Changing the order reference marks earlier drafts as based on older context.
 An order correction during inference causes HTTP 409 instead of saving a stale
 draft. No database transaction is held during inference. SQLite foreign keys are
 enabled for draft and manual-reference relationships.
 
-Human approval actions, status workflows, email sending, real refunds, live order
-integrations, authentication and other external services are outside Milestone 3A.
+Human approvals and ticket workflows are described below. Email sending, real
+refunds, live order integrations, authentication and external services remain out
+of scope.
+
+## Human approval and ticket workflow (Milestone 3B)
+
+Select a ticket and generate or select a saved reply. **Edit reply** opens a text
+editor; **Save Draft** saves a pending revision and its history. **Approve** and
+**Reject** require confirmation. Rejection also requires a reason of at least five
+characters. **Regenerate** calls local Qwen and creates a separate pending draft
+linked to the selected draft. It never replaces an earlier version.
+
+Approved content is immutable. **Create pending revision** edits a copy; saving
+creates a new draft ID with a parent link, leaving the approved content and decision
+unchanged. Editing rejected content also creates a new pending child. Expand
+**Draft revision history** or **Original draft content** to inspect preserved text.
+Each draft exposes creation/modification/decision timestamps, version, reviewer,
+rejection reason and origin. An unreviewed draft has no decision timestamp or reviewer.
+
+Use **Ticket status** and confirm the change. Allowed transitions are enforced in
+FastAPI and reflected in the dropdown:
+
+| Current status | Allowed next statuses |
+| --- | --- |
+| New | In Progress |
+| In Progress | Waiting for Customer, Resolved |
+| Waiting for Customer | In Progress, Resolved |
+| Resolved | In Progress (reopen) |
+
+Approving or rejecting a draft never changes ticket status. No message is sent by
+any workflow action. The **Activity History** timeline records creation, status
+changes, reference corrections, draft generation/editing/decisions/regeneration,
+and human discrepancy reviews. Events and revisions are append-only.
+
+For a conflicting or unknown order, correct its reference if appropriate, or use
+**Document human review**. This requires confirmation and a reason of at least ten
+characters describing the review decision. It applies only to the current order
+context. The warning and the reason remain visible; documentation does not alter
+the customer message, prove disputed facts, or record a real escalation.
+
+Approval is blocked until required context review is documented. It is still
+blocked for stale context, contradictory product/status claims, unsupported dates,
+and recognized claims of unperformed refunds/actions/guarantees. A neutral
+clarification draft can be approved after documentation. Documentation never
+authorizes unsupported factual claims. An order/context change invalidates the
+earlier documentation; regenerate or save an edited revision using current facts.
+These deterministic language checks supplement human judgment, not a full semantic
+proof of arbitrary manually written text.
+
+The actor is **Local Operator**, a fixed local demo identity. This is **not user
+authentication or access control**. Anyone able to access this local API can act
+as the demo operator. The server does not accept a caller-supplied reviewer/actor.
+No authentication, multi-user roles, real sending or cloud deployment is implemented.
+
+### Workflow APIs and concurrency
+
+| API | Purpose |
+| --- | --- |
+| `GET /api/tickets/{id}/workflow` | Status/version, transitions, context hash and documented review |
+| `PATCH /api/tickets/{id}/status` | `{status, expected_version, confirmed: true}` |
+| `POST /api/tickets/{id}/discrepancy-resolutions` | `{context_fingerprint, reason, confirmed: true}` |
+| `PATCH /api/tickets/{id}/drafts/{draftId}` | `{reply_text, expected_version, context_fingerprint}` |
+| `POST /api/tickets/{id}/drafts/{draftId}/approve` | `{expected_version, context_fingerprint, confirmed: true}` |
+| `POST /api/tickets/{id}/drafts/{draftId}/reject` | Same, plus required `reason` |
+| `POST /api/tickets/{id}/drafts/{draftId}/regenerate` | Same as approval; returns a new pending draft |
+| `GET /api/tickets/{id}/drafts/{draftId}/revisions` | Preserved version/content/decision history |
+| `GET /api/tickets/{id}/activity?limit=30&offset=0` | Paginated audit timeline |
+
+All workflow writes use short SQLite `BEGIN IMMEDIATE` transactions. Mandatory
+versions reject stale draft edits, duplicate decisions and stale status changes
+with HTTP 409. Context fingerprints protect edits, decisions and documented reviews.
+The UI also sends `expected_context_fingerprint` for order-reference corrections;
+that field is optional only for compatibility with older order-lookup clients.
+An order change still invalidates workflow approval preconditions for every client.
+No AI inference holds a database transaction open. Regeneration checks the source
+version both before and after inference. Mutations are never automatically retried.
+
+### Safe database migration
+
+Migration version 1 adds `ticketworkflow`, `draftreview`, `draftrevision`,
+`discrepancyresolution`, `auditevent`, and `schemamigration`. It does not rebuild,
+delete or reset original tables. Before upgrading an existing database, SQLite's
+backup API creates a consistent copy, including committed WAL data, under
+`data/backups/<database>-pre-3b-<UTC timestamp>-<unique id>.sqlite3`.
+
+The migration runs in one transaction and records its version only on success.
+A failure rolls back schema/backfill changes and leaves original data intact.
+Repeated startup is idempotent. Existing ticket/draft creation history is explicitly
+marked **Historical import**, using original timestamps; previous human actions
+are not invented. Historical reference corrections with unknown timestamps are
+marked as imports, not backdated guesses.
+
+`ticket.status` and `replydraft.status` retain their original snapshot values;
+`ticketworkflow.status` and `draftreview.status` hold authoritative current workflow
+state. API responses combine them. This avoids unsafe replacement of old SQLite
+CHECK constraints while preserving original metadata. Database triggers protect
+approved review rows, original draft snapshots, revisions, audit events and review
+documentation against updates/deletion. Do not restore a backup over a running
+server; keep the original file and backup if a migration reports an error.
+
+Audit entries store IDs, versions, status changes and necessary review reasons.
+Original messages are not duplicated into the audit log, and no credentials are
+collected. Revision content is retained because it is necessary for review history.
 
 ## Tests and build
 
@@ -286,6 +392,43 @@ and desktop/mobile layouts. It creates synthetic test tickets and pending drafts
 in the selected backend. Set `OPSPILOT_SMOKE_URL` to another local Vite URL if using
 isolated QA ports. Results/screenshots are under `.cache/smoke3a/`. No new runtime
 or package installation is required for Milestone 3A.
+
+### Isolated Milestone 3B browser test
+
+This test must not target the production/demo database. Start a separate backend
+in a new PowerShell terminal:
+
+```powershell
+Set-Location F:\Projects\OpsPilot\backend
+$env:DATABASE_PATH = 'data/milestone3b-qa.db'
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8010
+```
+
+Start a separate frontend in another new terminal:
+
+```powershell
+Set-Location F:\Projects\OpsPilot\frontend
+$env:BACKEND_URL = 'http://127.0.0.1:8010'
+npm.cmd run dev -- --port 5180
+```
+
+Run the test in a third terminal:
+
+```powershell
+Set-Location F:\Projects\OpsPilot\frontend
+$env:OPSPILOT_SMOKE_URL = 'http://127.0.0.1:5180'
+npm.cmd run test:smoke:3b
+```
+
+The test refuses to proceed unless port 5180 is used and `/api/health` confirms
+the dedicated `data/milestone3b-qa.db` database. It uses the installed Edge browser
+headlessly and real local Qwen, creates synthetic QA data, and checks editing,
+approval, immutable approved revisions, rejection reasons, regeneration, ticket
+transitions/reopening, activity, discrepancy documentation and API bypass attempts.
+Results/screenshots are under `.cache/smoke3b/`; no new dependency install is needed.
+Stop the two QA servers with `Ctrl+C`. Use new terminals with the normal startup
+commands above for your production/demo database so QA environment variables are
+not accidentally reused.
 
 ## Troubleshooting
 
@@ -406,7 +549,8 @@ On ticket creation and reads, the backend derives a `consistency` result and
 `requires_human_review` flag from explicit Greek/English product and delivery claims.
 It detects product mismatches, delivery-state mismatches and competing statements;
 missing/unknown orders are marked as needing verification. These are read-time
-flags, not a status workflow: ticket status remains `new`. Corrections recompute
+flags, not automatic status changes. Milestone 3B's manual status workflow is
+separate. Corrections recompute
 the result and refresh list/detail badges. Product words inside order IDs are not
 treated as customer assertions. Delivery questions are not delivery confirmations.
 

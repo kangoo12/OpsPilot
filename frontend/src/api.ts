@@ -56,7 +56,8 @@ export type Ticket = {
   order_id: string | null
   customer_intent: string
   reason: string
-  status: 'new'
+  status: TicketStatus
+  workflow_version?: number
   created_at: string
   requires_human_review?: boolean
   consistency?: ConsistencyCheck
@@ -126,6 +127,7 @@ export type Order = {
   is_synthetic: true
 }
 export type TicketOrder = {
+  context_fingerprint?: string
   reference_order_id: string | null
   extracted_order_id: string | null
   source: 'extracted' | 'manual'
@@ -146,12 +148,24 @@ export type ReplyDraft = {
   ticket_id: string
   reply_text: string
   language: 'en' | 'el'
-  status: 'pending_review'
+  status: 'pending_review' | 'approved' | 'rejected'
   model: 'qwen3.5:9b'
   order_context: TicketOrder
   policy_version: string
   created_at: string
   snapshot_consistency?: ConsistencyCheck
+  original_content?: string
+  version?: number
+  updated_at?: string | null
+  approved_at?: string | null
+  rejected_at?: string | null
+  reviewer?: string | null
+  rejection_reason?: string | null
+  parent_draft_id?: string | null
+  origin?: string
+  revision_count?: number
+  approval_blockers?: string[]
+  review_context?: TicketOrder | null
 }
 export type DraftPage = { items: ReplyDraft[]; total: number }
 export type SupportPolicies = { version: string; is_fictional: true; policies: string[] }
@@ -160,9 +174,9 @@ export function getTicketOrder(id: string, signal?: AbortSignal): Promise<Ticket
   return ticketRequest(`/api/tickets/${encodeURIComponent(id)}/order`, { signal }, { failure: 'Cannot load verified order details. Check the backend and retry.' })
 }
 
-export function setTicketOrder(id: string, orderId: string | null): Promise<TicketOrder> {
+export function setTicketOrder(id: string, orderId: string | null, expectedContext?: string): Promise<TicketOrder> {
   return ticketRequest(`/api/tickets/${encodeURIComponent(id)}/order`, {
-    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_id: orderId }),
+    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_id: orderId, ...(expectedContext ? { expected_context_fingerprint: expectedContext } : {}) }),
   }, { invalid: 'Enter a valid order ID of up to 64 letters, numbers, hyphens or slashes.', failure: 'Could not confirm the order correction. Refresh this ticket before trying again.' })
 }
 
@@ -178,4 +192,42 @@ export function createReplyDraft(id: string): Promise<ReplyDraft> {
 
 export function getSupportPolicies(signal?: AbortSignal): Promise<SupportPolicies> {
   return ticketRequest('/api/support-policies', { signal })
+}
+
+export type TicketStatus = 'new' | 'in_progress' | 'waiting_for_customer' | 'resolved'
+export const statusLabels: Record<TicketStatus, string> = { new: 'New', in_progress: 'In Progress', waiting_for_customer: 'Waiting for Customer', resolved: 'Resolved' }
+export type WorkflowState = {
+  status: TicketStatus; version: number; allowed_transitions: TicketStatus[]; context_fingerprint: string
+  consistency: ConsistencyCheck; operator: string; identity_is_authenticated: false
+  resolution: { id: string; reason: string; actor: string; created_at: string; context_fingerprint: string } | null
+}
+export type ActivityEvent = { id: number; ticket_id: string; event_type: string; actor: string; created_at: string; data: Record<string, unknown> }
+export type ActivityPage = { items: ActivityEvent[]; total: number }
+export type DraftRevision = { draft_id: string; version: number; content: string; status: string; actor: string; action: string; reason: string | null; created_at: string }
+
+function workflowRequest<T>(path: string, method: string, body: unknown): Promise<T> {
+  return ticketRequest(path, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, {
+    failure: 'Could not confirm this change. Refresh the ticket before trying again.', invalid: 'Check the required fields, confirmation and review reason.',
+  })
+}
+export function getWorkflow(id: string, signal?: AbortSignal): Promise<WorkflowState> {
+  return ticketRequest(`/api/tickets/${encodeURIComponent(id)}/workflow`, { signal })
+}
+export function updateTicketStatus(id: string, status: TicketStatus, expectedVersion: number): Promise<Ticket> {
+  return workflowRequest(`/api/tickets/${encodeURIComponent(id)}/status`, 'PATCH', { status, expected_version: expectedVersion, confirmed: true })
+}
+export function documentDiscrepancy(id: string, context: string, reason: string): Promise<WorkflowState> {
+  return workflowRequest(`/api/tickets/${encodeURIComponent(id)}/discrepancy-resolutions`, 'POST', { context_fingerprint: context, reason, confirmed: true })
+}
+export function editReplyDraft(ticketId: string, draft: ReplyDraft, content: string, context: string): Promise<ReplyDraft> {
+  return workflowRequest(`/api/tickets/${encodeURIComponent(ticketId)}/drafts/${encodeURIComponent(draft.id)}`, 'PATCH', { reply_text: content, expected_version: draft.version ?? 1, context_fingerprint: context })
+}
+export function reviewReplyDraft(ticketId: string, draft: ReplyDraft, action: 'approve' | 'reject' | 'regenerate', context: string, reason?: string): Promise<ReplyDraft> {
+  return workflowRequest(`/api/tickets/${encodeURIComponent(ticketId)}/drafts/${encodeURIComponent(draft.id)}/${action}`, 'POST', { expected_version: draft.version ?? 1, context_fingerprint: context, confirmed: true, ...(action === 'reject' ? { reason } : {}) })
+}
+export function getDraftRevisions(ticketId: string, draftId: string, signal?: AbortSignal): Promise<DraftRevision[]> {
+  return ticketRequest(`/api/tickets/${encodeURIComponent(ticketId)}/drafts/${encodeURIComponent(draftId)}/revisions`, { signal })
+}
+export function getActivity(ticketId: string, offset = 0, signal?: AbortSignal): Promise<ActivityPage> {
+  return ticketRequest(`/api/tickets/${encodeURIComponent(ticketId)}/activity?limit=30&offset=${offset}`, { signal })
 }

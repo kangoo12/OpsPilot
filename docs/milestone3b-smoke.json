@@ -1,0 +1,968 @@
+{
+  "tickets": [
+    {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "DEMO-LAMP-9001",
+      "customer_intent": "Locate order and provide delivery estimate",
+      "reason": "Customer is inquiring about the status of a specific order and requesting the estimated delivery date. No immediate safety risk or critical deadline is indicated.",
+      "id": "eeb86a0d-e430-45c8-a12f-35412726993e",
+      "message": "Where is my order #DEMO-LAMP-9001? Please provide the recorded delivery estimate.",
+      "status": "new",
+      "created_at": "2026-11-10T21:11:12.385886Z",
+      "requires_human_review": false,
+      "consistency": {
+        "status": "consistent",
+        "requires_human_review": false,
+        "issues": [],
+        "reported_products": [],
+        "reported_delivery_states": [],
+        "check_version": "reported-facts-v1"
+      },
+      "workflow_version": 1
+    },
+    {
+      "category": "technical_support",
+      "priority": "high",
+      "order_id": "DEMO-LAMP-9001",
+      "customer_intent": "Device not turning on after delivery",
+      "reason": "The smartphone is unusable immediately after receipt, indicating a potential product fault requiring urgent attention.",
+      "id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+      "message": "My smartphone from order #DEMO-LAMP-9001 was delivered today, but it won't turn on.",
+      "status": "new",
+      "created_at": "2026-11-10T21:11:15.934300Z",
+      "requires_human_review": true,
+      "consistency": {
+        "status": "discrepancy",
+        "requires_human_review": true,
+        "issues": [
+          {
+            "code": "product_mismatch",
+            "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+            "customer_reported": "smartphone",
+            "order_recorded": "LumaLite desk lamp"
+          },
+          {
+            "code": "delivery_status_mismatch",
+            "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+            "customer_reported": "received",
+            "order_recorded": "in_transit"
+          }
+        ],
+        "reported_products": [
+          "smartphone"
+        ],
+        "reported_delivery_states": [
+          "received"
+        ],
+        "check_version": "reported-facts-v1"
+      },
+      "workflow_version": 1
+    }
+  ],
+  "drafts": [
+    {
+      "id": "04233c55-9c5d-4cd0-844d-0dc9fd998515",
+      "ticket_id": "eeb86a0d-e430-45c8-a12f-35412726993e",
+      "reply_text": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #DEMO-LAMP-9001 (LumaLite desk lamp) as in transit. The recorded estimated delivery date is 2026-11-14. This is an estimate, not a delivery guarantee.\n\nPlease let us know if you need further clarification about this order.\n\nWe are here to help with any further questions.",
+      "language": "en",
+      "status": "pending_review",
+      "model": "qwen3.5:9b",
+      "order_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      },
+      "policy_version": "aster-demo-2026-11-v2",
+      "created_at": "2026-11-10T21:11:13.387124Z",
+      "snapshot_consistency": {
+        "status": "consistent",
+        "requires_human_review": false,
+        "issues": [],
+        "reported_products": [],
+        "reported_delivery_states": [],
+        "check_version": "reported-facts-v1"
+      },
+      "original_content": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #DEMO-LAMP-9001 (LumaLite desk lamp) as in transit. The recorded estimated delivery date is 2026-11-14. This is an estimate, not a delivery guarantee.\n\nPlease let us know if you need further clarification about this order.\n\nWe are here to help with any further questions.",
+      "version": 1,
+      "updated_at": "2026-11-10T21:11:13.387124Z",
+      "approved_at": null,
+      "rejected_at": null,
+      "reviewer": null,
+      "rejection_reason": null,
+      "parent_draft_id": null,
+      "origin": "ai",
+      "revision_count": 1,
+      "approval_blockers": [],
+      "review_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      }
+    },
+    {
+      "id": "04233c55-9c5d-4cd0-844d-0dc9fd998515",
+      "ticket_id": "eeb86a0d-e430-45c8-a12f-35412726993e",
+      "reply_text": "Thank you for your message. Please let us know what additional help you need with this order.",
+      "language": "en",
+      "status": "approved",
+      "model": "qwen3.5:9b",
+      "order_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      },
+      "policy_version": "aster-demo-2026-11-v2",
+      "created_at": "2026-11-10T21:11:13.387124Z",
+      "snapshot_consistency": {
+        "status": "consistent",
+        "requires_human_review": false,
+        "issues": [],
+        "reported_products": [],
+        "reported_delivery_states": [],
+        "check_version": "reported-facts-v1"
+      },
+      "original_content": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #DEMO-LAMP-9001 (LumaLite desk lamp) as in transit. The recorded estimated delivery date is 2026-11-14. This is an estimate, not a delivery guarantee.\n\nPlease let us know if you need further clarification about this order.\n\nWe are here to help with any further questions.",
+      "version": 3,
+      "updated_at": "2026-11-10T21:11:13.573012Z",
+      "approved_at": "2026-11-10T21:11:13.573012Z",
+      "rejected_at": null,
+      "reviewer": "Local Operator",
+      "rejection_reason": null,
+      "parent_draft_id": null,
+      "origin": "ai",
+      "revision_count": 3,
+      "approval_blockers": [
+        "Only a pending draft can be approved."
+      ],
+      "review_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      }
+    },
+    {
+      "id": "819fdcfc-371b-48b4-b5c5-796479ad722a",
+      "ticket_id": "eeb86a0d-e430-45c8-a12f-35412726993e",
+      "reply_text": "Thank you. Please confirm what additional information you need about the order.",
+      "language": "en",
+      "status": "pending_review",
+      "model": "qwen3.5:9b",
+      "order_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      },
+      "policy_version": "aster-demo-2026-11-v2",
+      "created_at": "2026-11-10T21:11:13.778567Z",
+      "snapshot_consistency": {
+        "status": "consistent",
+        "requires_human_review": false,
+        "issues": [],
+        "reported_products": [],
+        "reported_delivery_states": [],
+        "check_version": "reported-facts-v1"
+      },
+      "original_content": "Thank you. Please confirm what additional information you need about the order.",
+      "version": 1,
+      "updated_at": "2026-11-10T21:11:13.778567Z",
+      "approved_at": null,
+      "rejected_at": null,
+      "reviewer": null,
+      "rejection_reason": null,
+      "parent_draft_id": "04233c55-9c5d-4cd0-844d-0dc9fd998515",
+      "origin": "human_revision",
+      "revision_count": 1,
+      "approval_blockers": [],
+      "review_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      }
+    },
+    {
+      "id": "819fdcfc-371b-48b4-b5c5-796479ad722a",
+      "ticket_id": "eeb86a0d-e430-45c8-a12f-35412726993e",
+      "reply_text": "Thank you. Please confirm what additional information you need about the order.",
+      "language": "en",
+      "status": "rejected",
+      "model": "qwen3.5:9b",
+      "order_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      },
+      "policy_version": "aster-demo-2026-11-v2",
+      "created_at": "2026-11-10T21:11:13.778567Z",
+      "snapshot_consistency": {
+        "status": "consistent",
+        "requires_human_review": false,
+        "issues": [],
+        "reported_products": [],
+        "reported_delivery_states": [],
+        "check_version": "reported-facts-v1"
+      },
+      "original_content": "Thank you. Please confirm what additional information you need about the order.",
+      "version": 2,
+      "updated_at": "2026-11-10T21:11:13.893098Z",
+      "approved_at": null,
+      "rejected_at": "2026-11-10T21:11:13.893098Z",
+      "reviewer": "Local Operator",
+      "rejection_reason": "Needs a clearer explanation of the recorded estimate.",
+      "parent_draft_id": "04233c55-9c5d-4cd0-844d-0dc9fd998515",
+      "origin": "human_revision",
+      "revision_count": 2,
+      "approval_blockers": [
+        "Only a pending draft can be approved."
+      ],
+      "review_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      }
+    },
+    {
+      "id": "16e759a3-d99c-49ec-8cfc-0941eb0fd9d5",
+      "ticket_id": "eeb86a0d-e430-45c8-a12f-35412726993e",
+      "reply_text": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #DEMO-LAMP-9001 (LumaLite desk lamp) as in transit. The recorded estimated delivery date is 2026-11-14. This is an estimate, not a delivery guarantee.\n\nPlease let us know if you need further clarification about this order.\n\nWe are here to help with any further questions.",
+      "language": "en",
+      "status": "pending_review",
+      "model": "qwen3.5:9b",
+      "order_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      },
+      "policy_version": "aster-demo-2026-11-v2",
+      "created_at": "2026-11-10T21:11:14.617472Z",
+      "snapshot_consistency": {
+        "status": "consistent",
+        "requires_human_review": false,
+        "issues": [],
+        "reported_products": [],
+        "reported_delivery_states": [],
+        "check_version": "reported-facts-v1"
+      },
+      "original_content": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #DEMO-LAMP-9001 (LumaLite desk lamp) as in transit. The recorded estimated delivery date is 2026-11-14. This is an estimate, not a delivery guarantee.\n\nPlease let us know if you need further clarification about this order.\n\nWe are here to help with any further questions.",
+      "version": 1,
+      "updated_at": "2026-11-10T21:11:14.617472Z",
+      "approved_at": null,
+      "rejected_at": null,
+      "reviewer": null,
+      "rejection_reason": null,
+      "parent_draft_id": "819fdcfc-371b-48b4-b5c5-796479ad722a",
+      "origin": "ai",
+      "revision_count": 1,
+      "approval_blockers": [],
+      "review_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "consistent",
+          "requires_human_review": false,
+          "issues": [],
+          "reported_products": [],
+          "reported_delivery_states": [],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "e889affe3180cc35684603af72680ab2718f2bfe8cb121567bbdf39092526382"
+      }
+    },
+    {
+      "id": "7775c5df-cd5d-407c-b9d7-98045b702931",
+      "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+      "reply_text": "Thank you for explaining the issue.\n\nThe details in your message and the available order information need clarification. The correct product and delivery details have not been confirmed.\n\nPlease confirm the order ID, the product ordered, and whether the item was delivered. Human review is needed before order-specific advice can be given.\n\nWe are here to help with any further questions.",
+      "language": "en",
+      "status": "pending_review",
+      "model": "qwen3.5:9b",
+      "order_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "discrepancy",
+          "requires_human_review": true,
+          "issues": [
+            {
+              "code": "product_mismatch",
+              "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+              "customer_reported": "smartphone",
+              "order_recorded": "LumaLite desk lamp"
+            },
+            {
+              "code": "delivery_status_mismatch",
+              "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+              "customer_reported": "received",
+              "order_recorded": "in_transit"
+            }
+          ],
+          "reported_products": [
+            "smartphone"
+          ],
+          "reported_delivery_states": [
+            "received"
+          ],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "2970dc39ccbe139769cdc735b26da125099a8f71b7592d6f3e1917de45025aeb"
+      },
+      "policy_version": "aster-demo-2026-11-v2",
+      "created_at": "2026-11-10T21:11:16.766981Z",
+      "snapshot_consistency": {
+        "status": "discrepancy",
+        "requires_human_review": true,
+        "issues": [
+          {
+            "code": "product_mismatch",
+            "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+            "customer_reported": "smartphone",
+            "order_recorded": "LumaLite desk lamp"
+          },
+          {
+            "code": "delivery_status_mismatch",
+            "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+            "customer_reported": "received",
+            "order_recorded": "in_transit"
+          }
+        ],
+        "reported_products": [
+          "smartphone"
+        ],
+        "reported_delivery_states": [
+          "received"
+        ],
+        "check_version": "reported-facts-v1"
+      },
+      "original_content": "Thank you for explaining the issue.\n\nThe details in your message and the available order information need clarification. The correct product and delivery details have not been confirmed.\n\nPlease confirm the order ID, the product ordered, and whether the item was delivered. Human review is needed before order-specific advice can be given.\n\nWe are here to help with any further questions.",
+      "version": 1,
+      "updated_at": "2026-11-10T21:11:16.766981Z",
+      "approved_at": null,
+      "rejected_at": null,
+      "reviewer": null,
+      "rejection_reason": null,
+      "parent_draft_id": null,
+      "origin": "ai",
+      "revision_count": 1,
+      "approval_blockers": [
+        "Document the current order discrepancy or missing information with a reason before approval."
+      ],
+      "review_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "discrepancy",
+          "requires_human_review": true,
+          "issues": [
+            {
+              "code": "product_mismatch",
+              "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+              "customer_reported": "smartphone",
+              "order_recorded": "LumaLite desk lamp"
+            },
+            {
+              "code": "delivery_status_mismatch",
+              "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+              "customer_reported": "received",
+              "order_recorded": "in_transit"
+            }
+          ],
+          "reported_products": [
+            "smartphone"
+          ],
+          "reported_delivery_states": [
+            "received"
+          ],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "2970dc39ccbe139769cdc735b26da125099a8f71b7592d6f3e1917de45025aeb"
+      }
+    },
+    {
+      "id": "7775c5df-cd5d-407c-b9d7-98045b702931",
+      "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+      "reply_text": "Thank you for explaining the issue.\n\nThe details in your message and the available order information need clarification. The correct product and delivery details have not been confirmed.\n\nPlease confirm the order ID, the product ordered, and whether the item was delivered. Human review is needed before order-specific advice can be given.\n\nWe are here to help with any further questions.",
+      "language": "en",
+      "status": "approved",
+      "model": "qwen3.5:9b",
+      "order_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "discrepancy",
+          "requires_human_review": true,
+          "issues": [
+            {
+              "code": "product_mismatch",
+              "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+              "customer_reported": "smartphone",
+              "order_recorded": "LumaLite desk lamp"
+            },
+            {
+              "code": "delivery_status_mismatch",
+              "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+              "customer_reported": "received",
+              "order_recorded": "in_transit"
+            }
+          ],
+          "reported_products": [
+            "smartphone"
+          ],
+          "reported_delivery_states": [
+            "received"
+          ],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "2970dc39ccbe139769cdc735b26da125099a8f71b7592d6f3e1917de45025aeb"
+      },
+      "policy_version": "aster-demo-2026-11-v2",
+      "created_at": "2026-11-10T21:11:16.766981Z",
+      "snapshot_consistency": {
+        "status": "discrepancy",
+        "requires_human_review": true,
+        "issues": [
+          {
+            "code": "product_mismatch",
+            "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+            "customer_reported": "smartphone",
+            "order_recorded": "LumaLite desk lamp"
+          },
+          {
+            "code": "delivery_status_mismatch",
+            "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+            "customer_reported": "received",
+            "order_recorded": "in_transit"
+          }
+        ],
+        "reported_products": [
+          "smartphone"
+        ],
+        "reported_delivery_states": [
+          "received"
+        ],
+        "check_version": "reported-facts-v1"
+      },
+      "original_content": "Thank you for explaining the issue.\n\nThe details in your message and the available order information need clarification. The correct product and delivery details have not been confirmed.\n\nPlease confirm the order ID, the product ordered, and whether the item was delivered. Human review is needed before order-specific advice can be given.\n\nWe are here to help with any further questions.",
+      "version": 2,
+      "updated_at": "2026-11-10T21:11:16.948040Z",
+      "approved_at": "2026-11-10T21:11:16.948040Z",
+      "rejected_at": null,
+      "reviewer": "Local Operator",
+      "rejection_reason": null,
+      "parent_draft_id": null,
+      "origin": "ai",
+      "revision_count": 2,
+      "approval_blockers": [
+        "Only a pending draft can be approved."
+      ],
+      "review_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "discrepancy",
+          "requires_human_review": true,
+          "issues": [
+            {
+              "code": "product_mismatch",
+              "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+              "customer_reported": "smartphone",
+              "order_recorded": "LumaLite desk lamp"
+            },
+            {
+              "code": "delivery_status_mismatch",
+              "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+              "customer_reported": "received",
+              "order_recorded": "in_transit"
+            }
+          ],
+          "reported_products": [
+            "smartphone"
+          ],
+          "reported_delivery_states": [
+            "received"
+          ],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "2970dc39ccbe139769cdc735b26da125099a8f71b7592d6f3e1917de45025aeb"
+      }
+    },
+    {
+      "id": "53cbe6cf-ae73-4fa9-80b6-2af51924dabe",
+      "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+      "reply_text": "Your LumaLite desk lamp is in transit. We have refunded your payment.",
+      "language": "en",
+      "status": "pending_review",
+      "model": "qwen3.5:9b",
+      "order_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "discrepancy",
+          "requires_human_review": true,
+          "issues": [
+            {
+              "code": "product_mismatch",
+              "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+              "customer_reported": "smartphone",
+              "order_recorded": "LumaLite desk lamp"
+            },
+            {
+              "code": "delivery_status_mismatch",
+              "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+              "customer_reported": "received",
+              "order_recorded": "in_transit"
+            }
+          ],
+          "reported_products": [
+            "smartphone"
+          ],
+          "reported_delivery_states": [
+            "received"
+          ],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "2970dc39ccbe139769cdc735b26da125099a8f71b7592d6f3e1917de45025aeb"
+      },
+      "policy_version": "aster-demo-2026-11-v2",
+      "created_at": "2026-11-10T21:11:17.038049Z",
+      "snapshot_consistency": {
+        "status": "discrepancy",
+        "requires_human_review": true,
+        "issues": [
+          {
+            "code": "product_mismatch",
+            "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+            "customer_reported": "smartphone",
+            "order_recorded": "LumaLite desk lamp"
+          },
+          {
+            "code": "delivery_status_mismatch",
+            "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+            "customer_reported": "received",
+            "order_recorded": "in_transit"
+          }
+        ],
+        "reported_products": [
+          "smartphone"
+        ],
+        "reported_delivery_states": [
+          "received"
+        ],
+        "check_version": "reported-facts-v1"
+      },
+      "original_content": "Your LumaLite desk lamp is in transit. We have refunded your payment.",
+      "version": 1,
+      "updated_at": "2026-11-10T21:11:17.038049Z",
+      "approved_at": null,
+      "rejected_at": null,
+      "reviewer": null,
+      "rejection_reason": null,
+      "parent_draft_id": "7775c5df-cd5d-407c-b9d7-98045b702931",
+      "origin": "human_revision",
+      "revision_count": 1,
+      "approval_blockers": [
+        "The reply asserts an unperformed action, approval or delivery guarantee. Remove that claim.",
+        "The application has not sent messages, issued refunds or performed external actions.",
+        "Unverified or conflicting order information must be omitted. Ask for clarification instead."
+      ],
+      "review_context": {
+        "reference_order_id": "DEMO-LAMP-9001",
+        "lookup_status": "found",
+        "order": {
+          "id": "DEMO-LAMP-9001",
+          "product": "LumaLite desk lamp",
+          "order_date": "2026-11-06",
+          "delivery_status": "in_transit",
+          "estimated_delivery_date": "2026-11-14",
+          "return_eligibility": "not_started",
+          "warranty_eligibility": "review_available",
+          "snapshot_date": "2026-11-10",
+          "is_synthetic": true
+        },
+        "extracted_order_id": "DEMO-LAMP-9001",
+        "source": "extracted",
+        "consistency": {
+          "status": "discrepancy",
+          "requires_human_review": true,
+          "issues": [
+            {
+              "code": "product_mismatch",
+              "message": "The product reported in the message differs from the matched order record. Neither source has been reconciled.",
+              "customer_reported": "smartphone",
+              "order_recorded": "LumaLite desk lamp"
+            },
+            {
+              "code": "delivery_status_mismatch",
+              "message": "The delivery information reported in the message differs from the matched order record. Human review is required.",
+              "customer_reported": "received",
+              "order_recorded": "in_transit"
+            }
+          ],
+          "reported_products": [
+            "smartphone"
+          ],
+          "reported_delivery_states": [
+            "received"
+          ],
+          "check_version": "reported-facts-v1"
+        },
+        "context_fingerprint": "2970dc39ccbe139769cdc735b26da125099a8f71b7592d6f3e1917de45025aeb"
+      }
+    }
+  ],
+  "checks": [
+    "ticket status in_progress",
+    "ticket status waiting_for_customer",
+    "ticket status resolved",
+    "ticket status in_progress",
+    "approved content unchanged; child revision; rejection reason; regeneration; activity timeline",
+    "unresolved discrepancy API blocked; human reason persisted; warning remains; unsupported edited claims still blocked"
+  ],
+  "browserErrors": [],
+  "activity": {
+    "items": [
+      {
+        "id": 38,
+        "event_type": "draft_edited",
+        "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+        "actor": "Local Operator",
+        "created_at": "2026-11-10T21:11:17.040364+00:00",
+        "data": {
+          "draft_id": "53cbe6cf-ae73-4fa9-80b6-2af51924dabe",
+          "parent_draft_id": "7775c5df-cd5d-407c-b9d7-98045b702931",
+          "previous_status": "approved",
+          "new_status": "pending_review"
+        }
+      },
+      {
+        "id": 37,
+        "event_type": "draft_revision_created",
+        "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+        "actor": "Local Operator",
+        "created_at": "2026-11-10T21:11:17.038049+00:00",
+        "data": {
+          "draft_id": "53cbe6cf-ae73-4fa9-80b6-2af51924dabe",
+          "parent_draft_id": "7775c5df-cd5d-407c-b9d7-98045b702931",
+          "origin": "human_revision",
+          "historical_import": false
+        }
+      },
+      {
+        "id": 36,
+        "event_type": "draft_approved",
+        "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+        "actor": "Local Operator",
+        "created_at": "2026-11-10T21:11:16.948146+00:00",
+        "data": {
+          "draft_id": "7775c5df-cd5d-407c-b9d7-98045b702931",
+          "version": 2,
+          "reason": null,
+          "message_sent": false
+        }
+      },
+      {
+        "id": 35,
+        "event_type": "discrepancy_documented",
+        "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+        "actor": "Local Operator",
+        "created_at": "2026-11-10T21:11:16.846135+00:00",
+        "data": {
+          "resolution_id": "f4bf1a98-50c9-48fa-be61-6f306ad991eb",
+          "reason": "Compared both sources; approve only the neutral clarification request and ask for the correct product and order reference.",
+          "context_fingerprint": "2970dc39ccbe139769cdc735b26da125099a8f71b7592d6f3e1917de45025aeb"
+        }
+      },
+      {
+        "id": 34,
+        "event_type": "draft_generated",
+        "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+        "actor": "Local AI",
+        "created_at": "2026-11-10T21:11:16.766981+00:00",
+        "data": {
+          "draft_id": "7775c5df-cd5d-407c-b9d7-98045b702931",
+          "parent_draft_id": null,
+          "origin": "ai",
+          "historical_import": false
+        }
+      },
+      {
+        "id": 33,
+        "event_type": "ticket_created",
+        "ticket_id": "799f06e5-6a9d-4810-9bf3-232541f242bb",
+        "actor": "Local Operator",
+        "created_at": "2026-11-10T21:11:15.943371+00:00",
+        "data": {
+          "category": "technical_support",
+          "priority": "high"
+        }
+      }
+    ],
+    "total": 6
+  },
+  "passed": true
+}

@@ -23,7 +23,7 @@ def test_backend_health_creates_local_database(app):
         response = client.get("/api/health")
         assert response.status_code == 200
         assert response.json() == {
-            "status": "ok", "service": "OpsPilot API", "database": "connected"
+            "status": "ok", "service": "OpsPilot API", "database": "connected", "isolated_qa": False
         }
         assert app.state.engine.url.database.endswith("test.db")
 

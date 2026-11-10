@@ -120,7 +120,7 @@ try {
   await expect(page.getByTestId('reply-text')).toHaveText(resolved.reply_text)
   await expect(page.getByLabel('Order ID for lookup')).toHaveValue('7821')
   await expect(page.getByRole('region', { name: 'AI suggested reply' })).toContainText('Pending human review')
-  assert.equal(await page.getByRole('button', { name: /approve|send/i }).count(), 0)
+  assert.equal(await page.getByRole('button', { name: /send/i }).count(), 0)
   await page.screenshot({ path: `${output}/desktop.png`, fullPage: true })
   await page.setViewportSize({ width: 390, height: 844 })
   await expect(page.getByTestId('reply-text')).toBeVisible()

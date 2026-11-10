@@ -25,6 +25,9 @@ class Priority(StrEnum):
 
 class TicketStatus(StrEnum):
     new = "new"
+    in_progress = "in_progress"
+    waiting_for_customer = "waiting_for_customer"
+    resolved = "resolved"
 
 
 class TicketCreate(BaseModel):
@@ -56,6 +59,7 @@ class TicketRead(Classification):
     created_at: datetime
     requires_human_review: bool = False
     consistency: ConsistencyCheck = Field(default_factory=ConsistencyCheck)
+    workflow_version: int = 1
 
     @field_validator("created_at")
     @classmethod

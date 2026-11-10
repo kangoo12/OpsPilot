@@ -10,6 +10,8 @@ from starlette.concurrency import run_in_threadpool
 from app.classifier import ai_error, classify_message
 from app.models import Ticket
 from app.orders import ticket_read
+from app.workflow_common import audit
+from app.workflow_models import TicketWorkflow
 from app.schemas import Priority, TicketCounts, TicketCreate, TicketPage, TicketRead, TicketStatus
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"])
@@ -23,6 +25,10 @@ def save_ticket(engine, message, classification) -> TicketRead:
     with Session(engine) as session:
         ticket = Ticket(message=message, **classification.model_dump())
         session.add(ticket)
+        session.flush()
+        session.add(TicketWorkflow(ticket_id=ticket.id))
+        audit(session, ticket.id, "ticket_created", data={"category": ticket.category, "priority": ticket.priority},
+              dedupe_key=f"ticket_created:{ticket.id}")
         session.commit()
         session.refresh(ticket)
         return ticket_read(session, ticket)
@@ -49,10 +55,10 @@ def list_tickets(
 ):
     with Session(request.app.state.engine) as session:
         def count(*conditions):
-            return session.exec(select(func.count(Ticket.id)).where(*conditions)).one()
+            return session.exec(select(func.count(Ticket.id)).outerjoin(TicketWorkflow, TicketWorkflow.ticket_id == Ticket.id).where(*conditions)).one()
 
         counts = TicketCounts(
-            total=count(), new=count(Ticket.status == TicketStatus.new),
+            total=count(), new=count(func.coalesce(TicketWorkflow.status, Ticket.status) == TicketStatus.new),
             high=count(Ticket.priority == Priority.high), urgent=count(Ticket.priority == Priority.urgent),
         )
         tickets = session.exec(select(Ticket).order_by(Ticket.created_at.desc(), Ticket.id.desc()).offset(offset).limit(limit)).all()

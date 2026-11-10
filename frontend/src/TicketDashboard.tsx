@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { createTicket, getTicket, listTickets, MAX_MESSAGE_LENGTH, type Category, type Priority, type Ticket, type TicketPage } from './api'
+import { createTicket, getTicket, listTickets, MAX_MESSAGE_LENGTH, statusLabels, type Category, type Priority, type Ticket, type TicketPage } from './api'
 import TicketSupport from './TicketSupport'
 
 const categoryLabels: Record<Category, string> = {
@@ -28,7 +28,7 @@ function TicketDetails({ ticket }: { ticket: Ticket }) {
     <section aria-label="Ticket details" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h3 className="text-lg font-semibold text-slate-900">Ticket details</h3>
-        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">New</span>
+        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{statusLabels[ticket.status]}</span>
       </div>
       <p className="mt-2 break-all font-mono text-xs text-slate-500">{ticket.id}</p>
       <time dateTime={ticket.created_at} className="mt-1 block text-xs text-slate-500">{timestamp(ticket.created_at)}</time>
@@ -170,7 +170,7 @@ export default function TicketDashboard() {
                 <button type="button" aria-label={`View ticket ${ticket.id}`} aria-pressed={selectedId === ticket.id}
                   onClick={() => { setSelected(null); setSelectedId(ticket.id); setDetailRevision(value => value + 1) }}
                   className={`block w-full p-6 text-left transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600 ${selectedId === ticket.id ? 'bg-indigo-50/60' : ''}`}>
-                  <div className="flex flex-wrap items-center gap-2"><CategoryBadge category={ticket.category} /><PriorityBadge priority={ticket.priority} />{ticket.requires_human_review && <span className="rounded-full bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-900">Human review</span>}<span className="ml-auto text-xs text-slate-500">New</span></div>
+                  <div className="flex flex-wrap items-center gap-2"><CategoryBadge category={ticket.category} /><PriorityBadge priority={ticket.priority} />{ticket.requires_human_review && <span className="rounded-full bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-900">Human review</span>}<span className="ml-auto text-xs text-slate-500">{statusLabels[ticket.status]}</span></div>
                   <p className="mt-3 line-clamp-2 break-words text-sm font-medium leading-6 text-slate-800" dir="auto">{ticket.customer_intent}</p>
                   <p className="mt-1 line-clamp-2 break-words text-sm leading-6 text-slate-500" dir="auto">{ticket.message}</p>
                   <div className="mt-3 flex flex-wrap justify-between gap-2 text-xs text-slate-500"><span className="break-all font-mono">{ticket.order_id ?? 'No order ID'}</span><time dateTime={ticket.created_at}>{timestamp(ticket.created_at)}</time></div>

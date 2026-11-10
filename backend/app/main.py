@@ -9,10 +9,12 @@ from pydantic import BaseModel
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import SQLModel
 
-from app.config import Settings
+from app.config import PROJECT_ROOT, Settings
 from app.database import check_database, create_database_engine
 from app.orders import router as orders_router, seed_orders
 from app.drafts import router as drafts_router
+from app.workflow import router as workflow_router
+from app.migrations import migrate_database
 from app.tickets import get_ollama_client, router as tickets_router
 
 
@@ -20,6 +22,7 @@ class BackendHealth(BaseModel):
     status: Literal["ok", "error"]
     service: str = "OpsPilot API"
     database: Literal["connected", "unavailable"]
+    isolated_qa: bool = False
 
 
 class OllamaHealth(BaseModel):
@@ -44,7 +47,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         engine = create_database_engine(config.database_path)
         app.state.engine = engine
         try:
-            SQLModel.metadata.create_all(engine)
+            migrate_database(engine, config.database_path)
             seed_orders(engine)
             app.state.settings = config
             app.state.classification_lock = asyncio.Lock()
@@ -60,10 +63,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             engine.dispose()
 
-    app = FastAPI(title="OpsPilot API", version="0.3.0", lifespan=lifespan)
+    app = FastAPI(title="OpsPilot API", version="0.4.0", lifespan=lifespan)
     app.include_router(tickets_router)
     app.include_router(orders_router)
     app.include_router(drafts_router)
+    app.include_router(workflow_router)
 
     @app.exception_handler(SQLAlchemyError)
     async def database_error(request: Request, exc: SQLAlchemyError):
@@ -79,7 +83,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         except SQLAlchemyError:
             response.status_code = 503
             return BackendHealth(status="error", database="unavailable")
-        return BackendHealth(status="ok", database="connected")
+        return BackendHealth(status="ok", database="connected",
+                             isolated_qa=config.database_path == PROJECT_ROOT / "data" / "milestone3b-qa.db")
 
     @app.get("/api/health/ollama", response_model=OllamaHealth)
     async def ollama_health(

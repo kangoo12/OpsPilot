@@ -2,11 +2,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import TicketSupport from './TicketSupport'
-import { createReplyDraft, getSupportPolicies, getTicketOrder, listDrafts, setTicketOrder, type ConsistencyCheck, type ReplyDraft, type Ticket, type TicketOrder } from './api'
+import { createReplyDraft, getSupportPolicies, getTicketOrder, getWorkflow, listDrafts, setTicketOrder, type ConsistencyCheck, type ReplyDraft, type Ticket, type TicketOrder } from './api'
 
 vi.mock('./api', async () => ({
   ...await vi.importActual<typeof import('./api')>('./api'),
-  createReplyDraft: vi.fn(), getSupportPolicies: vi.fn(), getTicketOrder: vi.fn(), listDrafts: vi.fn(), setTicketOrder: vi.fn(),
+  createReplyDraft: vi.fn(), getSupportPolicies: vi.fn(), getTicketOrder: vi.fn(), getWorkflow: vi.fn(), listDrafts: vi.fn(), setTicketOrder: vi.fn(),
 }))
 const ticket: Ticket = {
   id: 'e27e8e6c-bfc4-43cd-9e39-10e167574144', message: 'Where is my order #DEMO-LAMP-9001?',
@@ -42,6 +42,8 @@ beforeEach(() => {
   vi.mocked(getSupportPolicies).mockResolvedValue({ version: draft.policy_version, is_fictional: true, policies: ['Estimates are not guarantees.'] })
   vi.mocked(createReplyDraft).mockResolvedValue(draft)
   vi.mocked(setTicketOrder).mockResolvedValue(order)
+  vi.mocked(getWorkflow).mockResolvedValue({ status: 'new', version: 1, allowed_transitions: ['in_progress'], context_fingerprint: 'a'.repeat(64), operator: 'Local Operator', identity_is_authenticated: false, resolution: null,
+    consistency: { status: 'consistent', requires_human_review: false, issues: [], reported_products: [], reported_delivery_states: [], check_version: 'reported-facts-v1' } })
 })
 afterEach(cleanup)
 
@@ -114,7 +116,7 @@ describe('verified orders and suggested replies', () => {
     expect(within(region).getByText(/Found in demo records/)).toBeTruthy()
     expect(within(region).getByText(/not an approval/)).toBeTruthy()
     expect(within(region).getByText(/not a guarantee/)).toBeTruthy()
-    expect(screen.queryByRole('button', { name: /approve|send/i })).toBeNull()
+    expect(screen.queryByRole('button', { name: /send/i })).toBeNull()
   })
 
   it('distinguishes unknown and missing order information without invented facts', async () => {
@@ -177,7 +179,7 @@ describe('verified orders and suggested replies', () => {
     await screen.findByText(draft.reply_text)
     expect(screen.getByText('Pending human review')).toBeTruthy()
     expect(createReplyDraft).toHaveBeenCalledWith(ticket.id)
-    expect(screen.queryByRole('button', { name: /approve|send/i })).toBeNull()
+    expect(screen.queryByRole('button', { name: /send/i })).toBeNull()
   })
 
   it('loads persisted draft history and lets the user view earlier drafts', async () => {

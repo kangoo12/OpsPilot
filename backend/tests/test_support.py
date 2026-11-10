@@ -196,9 +196,12 @@ def test_drafts_survive_restart_and_corrections_keep_original_snapshot(app):
         settings = app.state.settings
     with TestClient(create_app(settings)) as client:
         page = client.get(path).json()
-        assert page["total"] == 2 and page["items"] == [second, draft]
+        # Approval eligibility is derived from the current order context; persisted
+        # draft content and history must still survive a correction/restart.
+        stable = lambda item: {key: value for key, value in item.items() if key != "approval_blockers"}
+        assert page["total"] == 2 and [stable(item) for item in page["items"]] == [stable(second), stable(draft)]
         assert page["items"][1]["order_context"]["order"]["id"] == "DEMO-LAMP-9001"
-        assert client.get(path + "?limit=1&offset=1").json()["items"] == [draft]
+        assert [stable(item) for item in client.get(path + "?limit=1&offset=1").json()["items"]] == [stable(draft)]
 
 
 @pytest.mark.parametrize("error,status", [(httpx.ConnectError, 503), (httpx.ReadTimeout, 504)])

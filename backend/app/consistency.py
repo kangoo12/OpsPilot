@@ -83,7 +83,7 @@ def delivery_claims(value: str) -> set[str]:
         before = text[max(0, match.start() - 60):match.start()]
         after = text[match.end():match.end() + 90]
         clause_before = re.split(r"[.!?;\n]|\bbut\b|\bαλλα\b", before)[-1]
-        if re.search(r"\b(?:not|never|hasn't|haven't|didn't|isn't|wasn't|δεν|ποτε|will|when|if|θα|ποτε|αν)\b", clause_before):
+        if re.search(r"\b(?:not|never|hasn't|haven't|didn't|isn't|wasn't|δεν|ποτε|will|when|whether|if|θα|ποτε|αν)\b", clause_before):
             continue
         if re.match(r"\s*(?:has|have|did|is|was|were)\b", clause_before) and re.match(r"[^.!?;\n]*\?", after):
             continue
