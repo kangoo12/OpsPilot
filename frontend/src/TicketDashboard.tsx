@@ -52,6 +52,9 @@ export default function TicketDashboard() {
   const [notice, setNotice] = useState('')
   const [page, setPage] = useState<TicketPage | null>(null)
   const [offset, setOffset] = useState(0)
+  const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const searchTerm = search.trim()
   const [revision, setRevision] = useState(0)
   const [listLoading, setListLoading] = useState(true)
   const [listError, setListError] = useState('')
@@ -70,10 +73,17 @@ export default function TicketDashboard() {
   }, [])
 
   useEffect(() => {
-    const controller = new AbortController()
+    if (searchTerm === debouncedSearch) return
+    const timer = setTimeout(() => { setOffset(0); setDebouncedSearch(searchTerm) }, 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm, debouncedSearch])
+
+  useEffect(() => {
     setListLoading(true)
     setListError('')
-    void listTickets(offset, controller.signal).then(result => {
+    if (searchTerm !== debouncedSearch) return
+    const controller = new AbortController()
+    void listTickets(offset, controller.signal, debouncedSearch).then(result => {
       if (controller.signal.aborted) return
       if (offset > 0 && result.items.length === 0) { setOffset(0); return }
       setPage(result)
@@ -81,7 +91,7 @@ export default function TicketDashboard() {
       if (!controller.signal.aborted) setListError(errorMessage(error))
     }).finally(() => { if (!controller.signal.aborted) setListLoading(false) })
     return () => controller.abort()
-  }, [offset, revision])
+  }, [offset, revision, searchTerm, debouncedSearch])
 
   useEffect(() => {
     if (!selectedId) return
@@ -161,9 +171,20 @@ export default function TicketDashboard() {
             <div><h2 id="tickets-heading" className="text-lg font-semibold text-slate-900">Tickets</h2><p className="mt-1 text-xs text-slate-500">Newest first · saved on this computer</p></div>
             <button type="button" disabled={listLoading} onClick={() => setRevision(value => value + 1)} className={secondaryButton}>Refresh tickets</button>
           </div>
+          <div className="border-b border-slate-100 p-5">
+            <label htmlFor="ticket-search" className="block text-sm font-medium text-slate-700">Search tickets</label>
+            <div className="mt-2 flex gap-2">
+              <input id="ticket-search" type="search" value={search} onChange={event => setSearch(event.target.value)}
+                placeholder="Message, order ID or customer intent" aria-describedby="ticket-search-help"
+                className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+              {search && <button type="button" onClick={() => setSearch('')} className={secondaryButton}>Clear search</button>}
+            </div>
+            <p id="ticket-search-help" className="mt-2 text-xs text-slate-500">Search customer messages, order IDs and customer intent.</p>
+            {!listLoading && !listError && page && <p role="status" className="mt-2 text-xs text-slate-500">{page.counts.total} {debouncedSearch ? 'matching tickets' : 'tickets'}</p>}
+          </div>
           {listError && <p role="alert" className="m-5 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">{listError} {page ? 'Showing the last loaded tickets and counts.' : ''}</p>}
           {listLoading && <p role="status" className="p-6 text-sm text-slate-500">Loading tickets…</p>}
-          {!listLoading && !listError && page?.items.length === 0 && <p className="p-8 text-center text-sm leading-6 text-slate-500">No tickets yet. Submit a customer message to get started.</p>}
+          {!listLoading && !listError && page?.items.length === 0 && <p className="p-8 text-center text-sm leading-6 text-slate-500">{debouncedSearch ? 'No results found. Try another search or clear the search.' : 'No tickets yet. Submit a customer message to get started.'}</p>}
           <ul aria-label="Saved tickets" className="divide-y divide-slate-100">
             {page?.items.map(ticket => (
               <li key={ticket.id}>

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import TicketDashboard from './TicketDashboard'
 import { createTicket, getTicket, listTickets, type Ticket, type TicketPage } from './api'
 
@@ -25,7 +25,7 @@ beforeEach(() => {
   vi.mocked(getTicket).mockResolvedValue(ticket)
   vi.mocked(createTicket).mockResolvedValue(ticket)
 })
-afterEach(cleanup)
+afterEach(() => { cleanup(); vi.useRealTimers() })
 
 async function showDashboard() {
   render(<TicketDashboard />)
@@ -123,6 +123,107 @@ describe('ticket dashboard', () => {
     render(<TicketDashboard />)
     const next = await screen.findByRole('button', { name: 'Next' })
     fireEvent.click(next)
-    await waitFor(() => expect(listTickets).toHaveBeenLastCalledWith(20, expect.any(AbortSignal)))
+    await waitFor(() => expect(listTickets).toHaveBeenLastCalledWith(20, expect.any(AbortSignal), ''))
+  })
+})
+
+describe('ticket search', () => {
+  function search(value: string) {
+    fireEvent.change(screen.getByLabelText('Search tickets'), { target: { value } })
+  }
+  async function advance(milliseconds = 300) {
+    await act(async () => { await vi.advanceTimersByTimeAsync(milliseconds) })
+  }
+
+  it('debounces typing for 300ms and updates matching tickets and counts', async () => {
+    await showDashboard()
+    vi.useFakeTimers()
+    vi.mocked(listTickets).mockResolvedValue(page([ticket]))
+    search('GR')
+    await advance(200)
+    search('GR-1042')
+    await advance(299)
+    expect(listTickets).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('Loading tickets…')).toBeTruthy()
+    await advance(1)
+    expect(listTickets).toHaveBeenCalledTimes(2)
+    expect(listTickets).toHaveBeenLastCalledWith(0, expect.any(AbortSignal), 'GR-1042')
+    expect(screen.getByRole('button', { name: `View ticket ${ticket.id}` })).toBeTruthy()
+    expect(screen.getByText('1 matching tickets')).toBeTruthy()
+  })
+
+  it('resets pagination for a search and preserves the query on subsequent pages', async () => {
+    vi.mocked(listTickets).mockResolvedValue({ ...page([ticket]), counts: { total: 41, new: 41, high: 0, urgent: 0 } })
+    render(<TicketDashboard />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Next' }))
+    await waitFor(() => expect(listTickets).toHaveBeenLastCalledWith(20, expect.any(AbortSignal), ''))
+    vi.useFakeTimers()
+    search('delivery')
+    await advance()
+    expect(listTickets).toHaveBeenLastCalledWith(0, expect.any(AbortSignal), 'delivery')
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    await advance(0)
+    expect(listTickets).toHaveBeenLastCalledWith(20, expect.any(AbortSignal), 'delivery')
+  })
+
+  it('shows no results and clears back to the unsearched list', async () => {
+    await showDashboard()
+    vi.useFakeTimers()
+    search('missing')
+    await advance()
+    expect(screen.getByText(/No results found/)).toBeTruthy()
+    expect(screen.getByText('0 matching tickets')).toBeTruthy()
+    vi.mocked(listTickets).mockResolvedValue(page([ticket]))
+    fireEvent.click(screen.getByRole('button', { name: 'Clear search' }))
+    await advance()
+    expect(listTickets).toHaveBeenLastCalledWith(0, expect.any(AbortSignal), '')
+    expect((screen.getByLabelText('Search tickets') as HTMLInputElement).value).toBe('')
+    expect(screen.queryByRole('button', { name: 'Clear search' })).toBeNull()
+    expect(screen.getByRole('button', { name: `View ticket ${ticket.id}` })).toBeTruthy()
+  })
+
+  it('reports search failures and retries the same query through refresh', async () => {
+    await showDashboard()
+    vi.useFakeTimers()
+    vi.mocked(listTickets).mockRejectedValueOnce(new Error('Search unavailable.'))
+    search('phone')
+    await advance()
+    expect(screen.getByRole('alert').textContent).toContain('Search unavailable.')
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh tickets' }))
+    await advance(0)
+    expect(listTickets).toHaveBeenLastCalledWith(0, expect.any(AbortSignal), 'phone')
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('ignores outdated responses even if the request ignores cancellation', async () => {
+    await showDashboard()
+    vi.useFakeTimers()
+    let finishOld!: (value: TicketPage) => void
+    vi.mocked(listTickets).mockReturnValueOnce(new Promise(resolve => { finishOld = resolve }))
+    search('old')
+    await advance()
+    const oldSignal = vi.mocked(listTickets).mock.calls.at(-1)![1]!
+    search('new')
+    expect(oldSignal.aborted).toBe(true)
+    vi.mocked(listTickets).mockResolvedValue(page([ticket]))
+    await advance()
+    await act(async () => { finishOld(page()) })
+    expect(screen.getByRole('button', { name: `View ticket ${ticket.id}` })).toBeTruthy()
+    expect(screen.getByText('1 matching tickets')).toBeTruthy()
+    expect(screen.queryByText(/No results found/)).toBeNull()
+  })
+
+  it('keeps the selected ticket details open when the search does not match it', async () => {
+    vi.mocked(listTickets).mockResolvedValue(page([ticket]))
+    render(<TicketDashboard />)
+    fireEvent.click(await screen.findByRole('button', { name: `View ticket ${ticket.id}` }))
+    await screen.findByRole('region', { name: 'Ticket details' })
+    vi.useFakeTimers()
+    vi.mocked(listTickets).mockResolvedValue(page())
+    search('unrelated')
+    await advance()
+    expect(screen.getByText(/No results found/)).toBeTruthy()
+    expect(within(screen.getByRole('region', { name: 'Ticket details' })).getByText(ticket.reason)).toBeTruthy()
+    expect(getTicket).toHaveBeenCalledTimes(1)
   })
 })

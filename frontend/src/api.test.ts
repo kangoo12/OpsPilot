@@ -95,4 +95,18 @@ describe('ticket requests', () => {
     expect(mock.mock.calls[0][0]).toBe('/api/tickets?limit=20&offset=20')
     expect(mock.mock.calls[1][0]).toBe('/api/tickets/a%2Fb')
   })
+
+  it('encodes the search parameter safely and preserves pagination and cancellation', async () => {
+    const mock = respond({})
+    const controller = new AbortController()
+    await listTickets(40, controller.signal, '  GR-1042 & Έκπτωση 50%  ')
+    const url = new URL(mock.mock.calls[0][0], 'http://localhost')
+    expect(url.searchParams.get('search')).toBe('GR-1042 & Έκπτωση 50%')
+    expect(url.searchParams.get('limit')).toBe('20')
+    expect(url.searchParams.get('offset')).toBe('40')
+    controller.abort()
+    expect(mock.mock.calls[0][1].signal.aborted).toBe(true)
+    await listTickets(0, undefined, '   ')
+    expect(mock.mock.calls[1][0]).toBe('/api/tickets?limit=20&offset=0')
+  })
 })

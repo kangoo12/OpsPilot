@@ -107,8 +107,10 @@ export function createTicket(message: string): Promise<Ticket> {
   })
 }
 
-export function listTickets(offset = 0, signal?: AbortSignal): Promise<TicketPage> {
-  return ticketRequest(`/api/tickets?limit=20&offset=${offset}`, { signal })
+export function listTickets(offset = 0, signal?: AbortSignal, search = ''): Promise<TicketPage> {
+  const query = new URLSearchParams({ limit: '20', offset: String(offset) })
+  if (search.trim()) query.set('search', search.trim())
+  return ticketRequest(`/api/tickets?${query}`, { signal })
 }
 
 export function getTicket(id: string, signal?: AbortSignal): Promise<Ticket> {
