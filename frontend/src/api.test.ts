@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { checkConnection, createTicket, getTicket, listTickets } from './api'
+import { checkConnection, createReplyDraft, createTicket, getTicket, getTicketOrder, listDrafts, listTickets, setTicketOrder } from './api'
 
 afterEach(() => { vi.unstubAllGlobals() })
 
@@ -51,6 +51,24 @@ describe('connection checks', () => {
 })
 
 describe('ticket requests', () => {
+  it('keeps order lookups and reply generation behind the backend', async () => {
+    const mock = respond({})
+    await getTicketOrder('ticket-id')
+    await setTicketOrder('ticket-id', 'GR-1042')
+    await createReplyDraft('ticket-id')
+    await listDrafts('ticket-id')
+    expect(mock.mock.calls.map(call => call[0])).toEqual(['/api/tickets/ticket-id/order', '/api/tickets/ticket-id/order', '/api/tickets/ticket-id/drafts', '/api/tickets/ticket-id/drafts'])
+    expect(mock.mock.calls[1][1].method).toBe('PUT')
+    expect(JSON.parse(mock.mock.calls[1][1].body)).toEqual({ order_id: 'GR-1042' })
+    expect(mock.mock.calls[2][1].method).toBe('POST')
+  })
+
+  it('does not automatically retry failed draft generation', async () => {
+    const mock = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'))
+    vi.stubGlobal('fetch', mock)
+    await expect(createReplyDraft('ticket-id')).rejects.toThrow('Refresh saved drafts')
+    expect(mock).toHaveBeenCalledTimes(1)
+  })
   it('sends the original message only to the backend', async () => {
     const mock = respond({ id: 'ticket-id' }, 201)
     await createTicket('  Η παραγγελία μου #GR-1042 δεν ήρθε.  ')

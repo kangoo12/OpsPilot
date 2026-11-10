@@ -33,6 +33,12 @@ async function showDashboard() {
 }
 
 describe('ticket dashboard', () => {
+  it('flags tickets requiring order verification in the list', async () => {
+    vi.mocked(listTickets).mockResolvedValue(page([{ ...ticket, requires_human_review: true }]))
+    render(<TicketDashboard />)
+    await screen.findByRole('button', { name: `View ticket ${ticket.id}` })
+    expect(screen.getByText('Human review')).toBeTruthy()
+  })
   it('shows an empty list and counts', async () => {
     await showDashboard()
     const counts = screen.getByRole('region', { name: 'Ticket counts' })

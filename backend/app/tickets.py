@@ -9,6 +9,7 @@ from starlette.concurrency import run_in_threadpool
 
 from app.classifier import ai_error, classify_message
 from app.models import Ticket
+from app.orders import ticket_read
 from app.schemas import Priority, TicketCounts, TicketCreate, TicketPage, TicketRead, TicketStatus
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"])
@@ -24,7 +25,7 @@ def save_ticket(engine, message, classification) -> TicketRead:
         session.add(ticket)
         session.commit()
         session.refresh(ticket)
-        return TicketRead.model_validate(ticket)
+        return ticket_read(session, ticket)
 
 
 @router.post("", response_model=TicketRead, status_code=201)
@@ -55,7 +56,7 @@ def list_tickets(
             high=count(Ticket.priority == Priority.high), urgent=count(Ticket.priority == Priority.urgent),
         )
         tickets = session.exec(select(Ticket).order_by(Ticket.created_at.desc(), Ticket.id.desc()).offset(offset).limit(limit)).all()
-        return TicketPage(items=[TicketRead.model_validate(ticket) for ticket in tickets], counts=counts, limit=limit, offset=offset)
+        return TicketPage(items=[ticket_read(session, ticket) for ticket in tickets], counts=counts, limit=limit, offset=offset)
 
 
 @router.get("/{ticket_id}", response_model=TicketRead)
@@ -64,4 +65,4 @@ def get_ticket(ticket_id: UUID, request: Request):
         ticket = session.get(Ticket, ticket_id)
         if ticket is None:
             raise HTTPException(status_code=404, detail={"code": "ticket_not_found", "message": "Ticket not found."})
-        return TicketRead.model_validate(ticket)
+        return ticket_read(session, ticket)

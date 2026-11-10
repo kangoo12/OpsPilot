@@ -11,6 +11,8 @@ from sqlmodel import SQLModel
 
 from app.config import Settings
 from app.database import check_database, create_database_engine
+from app.orders import router as orders_router, seed_orders
+from app.drafts import router as drafts_router
 from app.tickets import get_ollama_client, router as tickets_router
 
 
@@ -43,6 +45,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.engine = engine
         try:
             SQLModel.metadata.create_all(engine)
+            seed_orders(engine)
             app.state.settings = config
             app.state.classification_lock = asyncio.Lock()
             # Ignore proxy settings and redirects so all Ollama requests stay local.
@@ -57,8 +60,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             engine.dispose()
 
-    app = FastAPI(title="OpsPilot API", version="0.2.0", lifespan=lifespan)
+    app = FastAPI(title="OpsPilot API", version="0.3.0", lifespan=lifespan)
     app.include_router(tickets_router)
+    app.include_router(orders_router)
+    app.include_router(drafts_router)
 
     @app.exception_handler(SQLAlchemyError)
     async def database_error(request: Request, exc: SQLAlchemyError):

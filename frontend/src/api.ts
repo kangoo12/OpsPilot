@@ -58,6 +58,8 @@ export type Ticket = {
   reason: string
   status: 'new'
   created_at: string
+  requires_human_review?: boolean
+  consistency?: ConsistencyCheck
 }
 export type TicketPage = {
   items: Ticket[]
@@ -68,7 +70,7 @@ export type TicketPage = {
 
 export class ApiError extends Error {}
 
-async function ticketRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+async function ticketRequest<T>(path: string, options: RequestInit = {}, messages?: { failure?: string; invalid?: string }): Promise<T> {
   let response: Response
   try {
     const timeout = AbortSignal.timeout(options.method === 'POST' ? 310000 : 15000)
@@ -78,9 +80,9 @@ async function ticketRequest<T>(path: string, options: RequestInit = {}): Promis
     })
   } catch (error) {
     if (options.signal?.aborted) throw error
-    throw new ApiError(options.method === 'POST'
+    throw new ApiError(messages?.failure ?? (options.method === 'POST'
       ? 'Could not confirm whether the ticket was saved. Check the backend and refresh the list before submitting again.'
-      : 'Cannot load tickets. Check that the backend is running and try again.')
+      : 'Cannot load tickets. Check that the backend is running and try again.'))
   }
   let body: unknown
   try { body = await response.json() } catch {
@@ -93,7 +95,7 @@ async function ticketRequest<T>(path: string, options: RequestInit = {}): Promis
         throw new ApiError(detail.message)
       }
     }
-    throw new ApiError(response.status === 422 ? 'Enter a message between 1 and 5,000 characters.' : 'The request failed. Please try again.')
+    throw new ApiError(response.status === 422 ? messages?.invalid ?? 'Enter a message between 1 and 5,000 characters.' : 'The request failed. Please try again.')
   }
   return body as T
 }
@@ -110,4 +112,70 @@ export function listTickets(offset = 0, signal?: AbortSignal): Promise<TicketPag
 
 export function getTicket(id: string, signal?: AbortSignal): Promise<Ticket> {
   return ticketRequest(`/api/tickets/${encodeURIComponent(id)}`, { signal })
+}
+
+export type Order = {
+  id: string
+  product: string
+  order_date: string
+  delivery_status: 'processing' | 'in_transit' | 'delayed' | 'delivered' | 'cancelled' | 'returned'
+  estimated_delivery_date: string | null
+  return_eligibility: 'review_available' | 'not_eligible' | 'not_started' | 'unknown'
+  warranty_eligibility: 'review_available' | 'not_eligible' | 'unknown'
+  snapshot_date: string
+  is_synthetic: true
+}
+export type TicketOrder = {
+  reference_order_id: string | null
+  extracted_order_id: string | null
+  source: 'extracted' | 'manual'
+  lookup_status: 'found' | 'unknown' | 'not_provided'
+  order: Order | null
+  consistency?: ConsistencyCheck
+}
+export type ConsistencyCheck = {
+  status: 'consistent' | 'discrepancy' | 'unknown_order' | 'no_order_id' | 'not_checked'
+  requires_human_review: boolean
+  issues: { code: string; message: string; customer_reported: string | null; order_recorded: string | null }[]
+  reported_products: string[]
+  reported_delivery_states: string[]
+  check_version: string
+}
+export type ReplyDraft = {
+  id: string
+  ticket_id: string
+  reply_text: string
+  language: 'en' | 'el'
+  status: 'pending_review'
+  model: 'qwen3.5:9b'
+  order_context: TicketOrder
+  policy_version: string
+  created_at: string
+  snapshot_consistency?: ConsistencyCheck
+}
+export type DraftPage = { items: ReplyDraft[]; total: number }
+export type SupportPolicies = { version: string; is_fictional: true; policies: string[] }
+
+export function getTicketOrder(id: string, signal?: AbortSignal): Promise<TicketOrder> {
+  return ticketRequest(`/api/tickets/${encodeURIComponent(id)}/order`, { signal }, { failure: 'Cannot load verified order details. Check the backend and retry.' })
+}
+
+export function setTicketOrder(id: string, orderId: string | null): Promise<TicketOrder> {
+  return ticketRequest(`/api/tickets/${encodeURIComponent(id)}/order`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_id: orderId }),
+  }, { invalid: 'Enter a valid order ID of up to 64 letters, numbers, hyphens or slashes.', failure: 'Could not confirm the order correction. Refresh this ticket before trying again.' })
+}
+
+export function listDrafts(id: string, signal?: AbortSignal): Promise<DraftPage> {
+  return ticketRequest(`/api/tickets/${encodeURIComponent(id)}/drafts`, { signal }, { failure: 'Cannot load saved drafts. Check the backend and retry.' })
+}
+
+export function createReplyDraft(id: string): Promise<ReplyDraft> {
+  return ticketRequest(`/api/tickets/${encodeURIComponent(id)}/drafts`, { method: 'POST' }, {
+    failure: 'Could not confirm whether the draft was saved. Refresh saved drafts before generating again.',
+  })
+}
+
+export function getSupportPolicies(signal?: AbortSignal): Promise<SupportPolicies> {
+  return ticketRequest('/api/support-policies', { signal })
 }

@@ -1,13 +1,16 @@
 # OpsPilot
 
-Local AI customer support automation. Milestone 2 adds Greek/English customer
-message classification, persistent SQLite tickets, and a responsive review dashboard
-to the existing React/FastAPI application. Inference uses local `qwen3.5:9b` only.
+Local AI customer support automation. Milestone 3A includes Greek/English message
+classification, persistent tickets, verified synthetic order lookup and grounded
+reply drafts in the existing React/FastAPI dashboard. Inference uses local
+`qwen3.5:9b` exclusively.
 
 Paste a message, select **Classify & save ticket**, and review the saved ticket's
 category, priority, order ID (when explicitly referenced), intent, and reason.
 The dashboard includes service health, counts, a paginated ticket list, refresh,
-and individual ticket details. Each ticket starts with status `new`.
+and individual ticket details. Each ticket starts with status `new`. Select a ticket
+to inspect its order, correct the order reference, and generate a suggested reply.
+Every saved reply stays `pending_review`; nothing is approved, sent or executed.
 
 All AI connections stay on this computer. There are no cloud inference APIs,
 external fonts, analytics, or paid services. Dependency installation needs internet
@@ -29,7 +32,7 @@ so its PATH includes the new runtimes. No global npm or Python packages are need
 ```text
 OpsPilot/
   backend/
-    app/                 # Configuration, health, classifier, schemas, ticket API/storage
+    app/                 # Health, classifier, tickets, synthetic orders, reply plans/drafts
     tests/               # Isolated API and failure-path tests
     requirements.txt
     requirements-dev.txt
@@ -38,6 +41,7 @@ OpsPilot/
   frontend/
     src/                 # React dashboard, API client, unit/component tests
     scripts/smoke.mjs     # Real browser + local model smoke test
+    scripts/smoke3a.mjs   # Order lookup, corrections, reply generation and persistence
     package.json
     vite.config.ts
     tsconfig.json
@@ -119,6 +123,7 @@ are loaded from the repository root regardless of the current directory.
 | `OLLAMA_MODEL` | `qwen3.5:9b` | Fixed local model for this milestone; other names are rejected |
 | `OLLAMA_TIMEOUT_SECONDS` | `5` | Ollama request timeout, greater than 0 and at most 30 seconds |
 | `CLASSIFICATION_TIMEOUT_SECONDS` | `120` | Whole inference deadline, including model loading; 10–300 seconds |
+| `REPLY_TIMEOUT_SECONDS` | `120` | Whole reply-plan inference deadline; 10–300 seconds |
 | `DATABASE_PATH` | `./data/opspilot.db` | File path inside this repository |
 | `BACKEND_URL` | `http://127.0.0.1:8000` | Vite's local API proxy target |
 
@@ -128,7 +133,7 @@ the development server and `npm.cmd run preview` include this proxy. Serving
 `dist` from a different host requires an equivalent `/api` proxy.
 
 Ollama requests ignore HTTP proxy environment variables and never follow redirects.
-SQLite and the ticket table are created at backend startup with SQLModel's
+SQLite and the ticket, order, order-reference and reply-draft tables are created at backend startup with SQLModel's
 `create_all`. This is additive: existing records are preserved. Classification
 does not hold a database transaction open while waiting for Ollama.
 
@@ -166,7 +171,7 @@ order labels with IDs of up to 64 characters containing at least one digit; it
 returns null when an identifier is absent or ambiguous. It never generates an ID.
 Customer text and AI explanations are rendered as escaped text in React.
 
-One classification runs at a time per backend process. A concurrent submission
+One AI request (classification or reply generation) runs at a time per backend process. A concurrent submission
 gets HTTP 429; it is never silently queued or retried. Model unavailability returns
 HTTP 503, bad AI output HTTP 502, and an inference timeout HTTP 504. None produces
 a substitute classification or an unclassified ticket. Stored tickets remain
@@ -179,8 +184,65 @@ structure and prevent invented IDs; they cannot prove that every category, prior
 or explanation is semantically correct or that every adversarial message is resisted.
 No automatic actions depend on these classifications.
 
-Email sending, refunds, generated customer replies, order lookup, authentication,
-and external integrations are outside this milestone.
+New customer intents are limited to 120 characters and 18 words, use actionable
+task phrases, and are checked for gendered customer language and verbatim copying.
+Explanations focus on the issue and severity, without a gendered customer narrative.
+Older, longer saved summaries remain readable; no historical tickets are rewritten.
+
+## Synthetic orders and suggested replies
+
+The fictional **Aster Shop** catalog seeds 19 orders on startup, including `7821`
+(a delivered smartphone), `DEMO-LAMP-9001` (the lamp in transit), and `GR-1042`.
+Unrelated scenarios use separate order IDs. Products and all order records are synthetic. There are no customer
+names, addresses, card details or other real customer data. The fixed snapshot is
+dated November 10, 2026. Delivery statuses, estimates and support eligibility refer
+to that snapshot, not to live tracking or the current date. Startup inserts missing
+fixtures and does not overwrite existing records.
+
+| API | Behavior |
+| --- | --- |
+| `GET /api/orders` | List fictional order records |
+| `GET /api/orders/{id}` | Found/unknown result; unknown orders have `order: null` |
+| `GET /api/tickets/{uuid}/order` | Look up the ticket's effective reference and show its source |
+| `PUT /api/tickets/{uuid}/order` | Save `{ "order_id": "7821" }` or `null` as a manual reference |
+| `POST /api/tickets/{uuid}/drafts` | Generate, validate and save a pending reply draft; HTTP 201 |
+| `GET /api/tickets/{uuid}/drafts?limit=20&offset=0` | Persisted drafts, newest first; limit 1–50 |
+| `GET /api/support-policies` | Fictional company policies and their version |
+
+The **Order Details** panel automatically looks up an extracted order ID. **Save &
+lookup** can correct it, look up an unknown ID, or clear it. Manual references are
+persisted separately: the original AI-extracted ID, category and message remain
+unchanged. Draft generation uses the saved reference. Unsaved input changes must
+be saved before generating a draft.
+
+Reply generation sends Qwen the original untrusted customer text in a separate
+user message and supplies verified order data and seven fictional support policies
+in the system context. It uses structured output and `think: false`. For this
+milestone, Qwen selects a constrained reply plan: language, tone, relevant verified
+fact keys, an information request, and a closing. A deterministic Greek/English
+renderer assembles approved wording and verified values. This is intentionally
+constrained generation, rather than unrestricted model-written prose with an
+unreliable second-model fact check. Unexpected text, invalid plans, unsupported
+facts, wrong language and unsafe next steps are rejected without saving a draft.
+There is no fallback draft when inference fails.
+
+Mandatory order context cannot be omitted by the model. Known estimates are marked
+as estimates; missing estimates stay unknown. Unknown orders ask for the correct
+reference. Eligibility permits assessment only, never a return, replacement or
+refund approval. No approved sentence claims that a refund, cancellation, escalation,
+shipment update or message sending has been performed. Greek/English language is
+chosen from the original message using a letter-count heuristic; mixed-language
+edge cases still need human review.
+
+Drafts store their order snapshot, policy version, model and UTC timestamp. They
+all remain `pending_review`. The UI shows the latest 20 drafts with a history selector.
+Changing the order reference marks earlier drafts as based on older context.
+An order correction during inference causes HTTP 409 instead of saving a stale
+draft. No database transaction is held during inference. SQLite foreign keys are
+enabled for draft and manual-reference relationships.
+
+Human approval actions, status workflows, email sending, real refunds, live order
+integrations, authentication and other external services are outside Milestone 3A.
 
 ## Tests and build
 
@@ -210,6 +272,20 @@ saved tickets and dashboard display/reload, and checks a 390px mobile layout.
 It creates real sample tickets in the running backend's database. Results and
 screenshots are written under `.cache/smoke/`, which is ignored by Git. This smoke
 test is explicit and is not part of `npm.cmd test`, whose Ollama calls are mocked.
+
+Run the additional Milestone 3A browser flow with the servers running:
+
+```powershell
+Set-Location F:\Projects\OpsPilot\frontend
+npm.cmd run test:smoke:3a
+```
+
+This exercises real local Qwen classification and replies, Greek/English drafts,
+verified and unknown orders, an injection attempt, manual corrections, persistence,
+and desktop/mobile layouts. It creates synthetic test tickets and pending drafts
+in the selected backend. Set `OPSPILOT_SMOKE_URL` to another local Vite URL if using
+isolated QA ports. Results/screenshots are under `.cache/smoke3a/`. No new runtime
+or package installation is required for Milestone 3A.
 
 ## Troubleshooting
 
@@ -276,3 +352,90 @@ The measured requests used an already loaded model; they are not cold-start late
 guarantees. Full actual responses are in [docs/milestone2-smoke.json](docs/milestone2-smoke.json).
 Local screenshots are `.cache/smoke/desktop.png` and `.cache/smoke/mobile.png`.
 Smoke-test sample tickets remain in the local database. No commits or pushes were made.
+
+## Milestone 3A verification (original run)
+
+Historical result before the focused reliability review: the lamp fixture
+incorrectly reused `7821`. The output below and archived JSON are preserved as
+evidence, not as the current fixture definition. See the reliability review below.
+
+Verified on November 10, 2026:
+
+- 111 backend tests pass, including seeding, known/unknown orders, manual corrections,
+  grounded drafts, unsupported facts/actions, injection, failure handling, persistence,
+  concurrent context changes and concise/gender-neutral summary regressions.
+- 32 frontend tests pass; the production build and Python dependency checks pass.
+- Real `qwen3.5:9b` classification and four reply-plan inferences pass through the
+  full Edge browser flow. All drafts remain `pending_review` and no actions are sent.
+- Greek `GR-1042` draft correctly reports no verified ETA. English `7821` draft uses
+  only the recorded November 14 estimate and explicitly avoids guaranteeing delivery.
+- An injection requesting a fake delivery date and refund approval cannot add those
+  claims. Unknown orders ask for a corrected reference. A manual change to `GR-1042`
+  persists without replacing the original extracted ID `7821`.
+- Drafts survive page reload; desktop and 390px mobile screenshots were inspected.
+  No browser JavaScript errors or horizontal mobile overflow were detected.
+
+This run used separate QA ports **8010 / 5180** and
+`data/milestone3a-smoke.db`. Existing servers on **8000 / 5173** were left alone.
+The final real inference results are in
+[docs/milestone3a-smoke.json](docs/milestone3a-smoke.json); local screenshots are
+`.cache/smoke3a/desktop.png` and `.cache/smoke3a/mobile.png`. Measured draft requests
+took roughly 0.7–0.9 seconds with the model already loaded, not including a cold start.
+
+Restart an existing backend to load the new routes and seed orders. Startup commands
+above are unchanged. Existing tickets and their historical summaries are preserved;
+new classifications use the improved quality checks. No new packages, system changes,
+Git commits or pushes were needed for this milestone.
+
+## Focused reliability review
+
+The original smartphone ticket in `data/opspilot.db` and the reported lamp draft
+were different tickets in different databases. The lamp response came from a
+synthetic shipping/injection message in `data/milestone3a-smoke.db`; there was no
+draft saved for the original smartphone ticket. However, the seed reused `7821`
+for an unrelated product and reply generation did not compare customer claims
+with the matched record. That left a genuine consistency gap.
+
+Fresh seeds now reserve `7821` for the delivered smartphone. The lamp and its
+shipping fixtures use `DEMO-LAMP-9001`. Seeding still inserts missing rows only:
+existing tickets, old order rows, reference corrections and historical drafts are
+never rewritten or deleted. An existing legacy lamp row at `7821` is intentionally
+left intact and its conflict with the smartphone ticket is visibly flagged.
+
+On ticket creation and reads, the backend derives a `consistency` result and
+`requires_human_review` flag from explicit Greek/English product and delivery claims.
+It detects product mismatches, delivery-state mismatches and competing statements;
+missing/unknown orders are marked as needing verification. These are read-time
+flags, not a status workflow: ticket status remains `new`. Corrections recompute
+the result and refresh list/detail badges. Product words inside order IDs are not
+treated as customer assertions. Delivery questions are not delivery confirmations.
+
+These conservative rules cover recognized product vocabulary and explicit receipt/
+shipping wording. “No discrepancy detected” does not prove that every sentence
+has been semantically verified. The customer report and the dated order snapshot
+remain distinct sources; neither is silently declared correct or explained away.
+
+If a material discrepancy exists, the renderer excludes product, delivery, estimate
+and eligibility claims entirely. Qwen must return a clarification plan; the reply
+asks for the order reference, product and receipt information and states that human
+review is needed. It never guesses why the sources differ or claims an escalation.
+Invalid plans still fail without a fallback draft.
+
+Historical draft snapshots are checked on read without changing stored text.
+Conflicting old drafts are collapsed behind a warning, including when the current
+order reference has since been corrected. New conflict-aware clarification drafts
+remain visible and `pending_review`.
+
+For a read-only provenance audit, run from the repository root:
+
+```powershell
+backend\.venv\Scripts\python.exe backend\scripts\audit_order_references.py --database data/opspilot.db --order-id 7821
+```
+
+The helper permits only repository-local databases, opens SQLite in read-only mode,
+and reports ticket/draft provenance, consistency flags and table fingerprints.
+The temporary `.cache/debug_classification.py` capture script was reviewed and
+removed; reusable tests, browser checks and the audit helper live in source/test
+directories. `.cache/`, browser profiles, reports and temporary captures stay ignored.
+
+Full findings and validation are in [docs/reliability-review.md](docs/reliability-review.md).

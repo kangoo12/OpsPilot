@@ -3,6 +3,7 @@ from enum import StrEnum
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from app.consistency import ConsistencyCheck
 
 MAX_MESSAGE_LENGTH = 5000
 
@@ -53,6 +54,8 @@ class TicketRead(Classification):
     message: str
     status: TicketStatus
     created_at: datetime
+    requires_human_review: bool = False
+    consistency: ConsistencyCheck = Field(default_factory=ConsistencyCheck)
 
     @field_validator("created_at")
     @classmethod

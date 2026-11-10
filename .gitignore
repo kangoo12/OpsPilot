@@ -80,7 +80,10 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
-.cache
+# Temporary diagnostics, captured model output, browser profiles and screenshots
+.cache/
+playwright-report/
+test-results/
 nosetests.xml
 coverage.xml
 *.cover
