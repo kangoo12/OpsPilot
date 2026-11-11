@@ -1,0 +1,77 @@
+{
+  "historical_files_unchanged": 50,
+  "original_table_fingerprints_unchanged": 10,
+  "screenshot_qa_tables_unchanged": true,
+  "quick_start": {
+    "frontend": "localhost:5197",
+    "backend": "localhost:8018",
+    "path": ".cache/milestone6/live-demo.db",
+    "http_statuses": {
+      "/": 200,
+      "/api/health": 200,
+      "/api/health/ollama": 200,
+      "/api/tickets": 200,
+      "/api/orders": 200
+    },
+    "tickets": 0,
+    "fictional_orders": 19
+  },
+  "new_inference_calls": 0,
+  "application_code_changed": false,
+  "screenshots": [
+    {
+      "path": "docs/milestone6/screenshots/01-overview.png",
+      "width": 1440,
+      "height": 1100,
+      "sha256": "d60d083e55886594ff1a255a776cb7622f8869f55bcc98472c913bd876e19177"
+    },
+    {
+      "path": "docs/milestone6/screenshots/02-smart-inbox.png",
+      "width": 1440,
+      "height": 1100,
+      "sha256": "8cb699d622fe42d52a02039f39fc4087b3547a0f6e7839ed5263cb9930ee8faa"
+    },
+    {
+      "path": "docs/milestone6/screenshots/03-order-verification.png",
+      "width": 1440,
+      "height": 1100,
+      "sha256": "7e3e477c07ce7545b777c5e071a73393ed53d810814c561f840015b12cd88881"
+    },
+    {
+      "path": "docs/milestone6/screenshots/04-draft-review.png",
+      "width": 1440,
+      "height": 1100,
+      "sha256": "22ffc4b48b12927d685ff2c57b2ddd216ca3d62b1114173348556a079cb3fc3c"
+    },
+    {
+      "path": "docs/milestone6/screenshots/05-analytics.png",
+      "width": 1440,
+      "height": 1100,
+      "sha256": "b06f92873b0654f9280f7e6dff8d91490dbfeabc0569d648067cbed430ff225e"
+    }
+  ],
+  "documentation": {
+    "markdown_files": 11,
+    "local_links_and_anchors": 58,
+    "balanced_fences": true,
+    "basic_mermaid_structures": 2,
+    "mermaid_rendered": false,
+    "markdown_style_linter_run": false,
+    "external_urls_crawled": false
+  },
+  "screenshot_capture": {
+    "page_errors": 0,
+    "api_errors": 0,
+    "inference_calls": 0,
+    "api_mutations": 0,
+    "final_workflow_ready_state_wait": true,
+    "readonly_ready_state_recapture": true
+  },
+  "helper_javascript_syntax": "passed",
+  "git_diff_check": "passed",
+  "new_backend_or_frontend_tests_run": false,
+  "reason": "Application code unchanged; previous 5D tests preserved. Helpers were executed/syntax-checked.",
+  "reviewed_public_files": 19,
+  "scan_signals": 0,
+  "tracked_ignored_files": 0
+}
