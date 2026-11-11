@@ -1,0 +1,1751 @@
+{
+  "all": {
+    "category": {
+      "correct": 48,
+      "total": 60,
+      "percent": 80.0
+    },
+    "priority": {
+      "correct": 45,
+      "total": 60,
+      "percent": 75.0
+    },
+    "order_id": {
+      "correct": 49,
+      "total": 60,
+      "percent": 81.67
+    },
+    "complete": {
+      "correct": 43,
+      "total": 60,
+      "percent": 71.67
+    },
+    "invalid_output": {
+      "correct": 10,
+      "total": 60,
+      "percent": 16.67
+    },
+    "schema_invalid": {
+      "correct": 0,
+      "total": 60,
+      "percent": 0.0
+    },
+    "schema_unobserved": {
+      "correct": 0,
+      "total": 60,
+      "percent": 0.0
+    },
+    "failed_inference": {
+      "correct": 10,
+      "total": 60,
+      "percent": 16.67
+    },
+    "transport_failure": {
+      "correct": 0,
+      "total": 60,
+      "percent": 0.0
+    },
+    "harness_failure": {
+      "correct": 0,
+      "total": 60,
+      "percent": 0.0
+    },
+    "human_review_agreement": {
+      "correct": 49,
+      "total": 60,
+      "percent": 81.67
+    },
+    "category_confusion": {
+      "delivery": {
+        "delivery": 9,
+        "returns": 0,
+        "payments": 0,
+        "technical_support": 0,
+        "other": 0,
+        "FAILED": 3
+      },
+      "returns": {
+        "delivery": 0,
+        "returns": 7,
+        "payments": 0,
+        "technical_support": 0,
+        "other": 0,
+        "FAILED": 5
+      },
+      "payments": {
+        "delivery": 0,
+        "returns": 0,
+        "payments": 10,
+        "technical_support": 1,
+        "other": 0,
+        "FAILED": 1
+      },
+      "technical_support": {
+        "delivery": 1,
+        "returns": 0,
+        "payments": 0,
+        "technical_support": 10,
+        "other": 0,
+        "FAILED": 1
+      },
+      "other": {
+        "delivery": 0,
+        "returns": 0,
+        "payments": 0,
+        "technical_support": 0,
+        "other": 12,
+        "FAILED": 0
+      }
+    },
+    "category_per_class": {
+      "delivery": {
+        "precision": {
+          "correct": 9,
+          "total": 10,
+          "percent": 90.0
+        },
+        "recall": {
+          "correct": 9,
+          "total": 12,
+          "percent": 75.0
+        }
+      },
+      "returns": {
+        "precision": {
+          "correct": 7,
+          "total": 7,
+          "percent": 100.0
+        },
+        "recall": {
+          "correct": 7,
+          "total": 12,
+          "percent": 58.33
+        }
+      },
+      "payments": {
+        "precision": {
+          "correct": 10,
+          "total": 10,
+          "percent": 100.0
+        },
+        "recall": {
+          "correct": 10,
+          "total": 12,
+          "percent": 83.33
+        }
+      },
+      "technical_support": {
+        "precision": {
+          "correct": 10,
+          "total": 11,
+          "percent": 90.91
+        },
+        "recall": {
+          "correct": 10,
+          "total": 12,
+          "percent": 83.33
+        }
+      },
+      "other": {
+        "precision": {
+          "correct": 12,
+          "total": 12,
+          "percent": 100.0
+        },
+        "recall": {
+          "correct": 12,
+          "total": 12,
+          "percent": 100.0
+        }
+      }
+    },
+    "priority_confusion": {
+      "low": {
+        "low": 12,
+        "medium": 1,
+        "high": 0,
+        "urgent": 0,
+        "FAILED": 1
+      },
+      "medium": {
+        "low": 0,
+        "medium": 17,
+        "high": 0,
+        "urgent": 1,
+        "FAILED": 8
+      },
+      "high": {
+        "low": 0,
+        "medium": 2,
+        "high": 9,
+        "urgent": 0,
+        "FAILED": 1
+      },
+      "urgent": {
+        "low": 0,
+        "medium": 0,
+        "high": 1,
+        "urgent": 7,
+        "FAILED": 0
+      }
+    },
+    "priority_per_class": {
+      "low": {
+        "precision": {
+          "correct": 12,
+          "total": 12,
+          "percent": 100.0
+        },
+        "recall": {
+          "correct": 12,
+          "total": 14,
+          "percent": 85.71
+        }
+      },
+      "medium": {
+        "precision": {
+          "correct": 17,
+          "total": 20,
+          "percent": 85.0
+        },
+        "recall": {
+          "correct": 17,
+          "total": 26,
+          "percent": 65.38
+        }
+      },
+      "high": {
+        "precision": {
+          "correct": 9,
+          "total": 10,
+          "percent": 90.0
+        },
+        "recall": {
+          "correct": 9,
+          "total": 12,
+          "percent": 75.0
+        }
+      },
+      "urgent": {
+        "precision": {
+          "correct": 7,
+          "total": 8,
+          "percent": 87.5
+        },
+        "recall": {
+          "correct": 7,
+          "total": 8,
+          "percent": 87.5
+        }
+      }
+    }
+  },
+  "by_cohort": {
+    "normal": {
+      "category": {
+        "correct": 33,
+        "total": 41,
+        "percent": 80.49
+      },
+      "priority": {
+        "correct": 31,
+        "total": 41,
+        "percent": 75.61
+      },
+      "order_id": {
+        "correct": 34,
+        "total": 41,
+        "percent": 82.93
+      },
+      "complete": {
+        "correct": 30,
+        "total": 41,
+        "percent": 73.17
+      },
+      "invalid_output": {
+        "correct": 7,
+        "total": 41,
+        "percent": 17.07
+      },
+      "schema_invalid": {
+        "correct": 0,
+        "total": 41,
+        "percent": 0.0
+      },
+      "schema_unobserved": {
+        "correct": 0,
+        "total": 41,
+        "percent": 0.0
+      },
+      "failed_inference": {
+        "correct": 7,
+        "total": 41,
+        "percent": 17.07
+      },
+      "transport_failure": {
+        "correct": 0,
+        "total": 41,
+        "percent": 0.0
+      },
+      "harness_failure": {
+        "correct": 0,
+        "total": 41,
+        "percent": 0.0
+      },
+      "human_review_agreement": {
+        "correct": 34,
+        "total": 41,
+        "percent": 82.93
+      },
+      "category_confusion": {
+        "delivery": {
+          "delivery": 7,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 2
+        },
+        "returns": {
+          "delivery": 0,
+          "returns": 4,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 4
+        },
+        "payments": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 6,
+          "technical_support": 1,
+          "other": 0,
+          "FAILED": 1
+        },
+        "technical_support": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 8,
+          "other": 0,
+          "FAILED": 0
+        },
+        "other": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 8,
+          "FAILED": 0
+        }
+      },
+      "category_per_class": {
+        "delivery": {
+          "precision": {
+            "correct": 7,
+            "total": 7,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 7,
+            "total": 9,
+            "percent": 77.78
+          }
+        },
+        "returns": {
+          "precision": {
+            "correct": 4,
+            "total": 4,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 4,
+            "total": 8,
+            "percent": 50.0
+          }
+        },
+        "payments": {
+          "precision": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 6,
+            "total": 8,
+            "percent": 75.0
+          }
+        },
+        "technical_support": {
+          "precision": {
+            "correct": 8,
+            "total": 9,
+            "percent": 88.89
+          },
+          "recall": {
+            "correct": 8,
+            "total": 8,
+            "percent": 100.0
+          }
+        },
+        "other": {
+          "precision": {
+            "correct": 8,
+            "total": 8,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 8,
+            "total": 8,
+            "percent": 100.0
+          }
+        }
+      },
+      "priority_confusion": {
+        "low": {
+          "low": 8,
+          "medium": 1,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 1
+        },
+        "medium": {
+          "low": 0,
+          "medium": 12,
+          "high": 0,
+          "urgent": 1,
+          "FAILED": 6
+        },
+        "high": {
+          "low": 0,
+          "medium": 0,
+          "high": 6,
+          "urgent": 0,
+          "FAILED": 0
+        },
+        "urgent": {
+          "low": 0,
+          "medium": 0,
+          "high": 1,
+          "urgent": 5,
+          "FAILED": 0
+        }
+      },
+      "priority_per_class": {
+        "low": {
+          "precision": {
+            "correct": 8,
+            "total": 8,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 8,
+            "total": 10,
+            "percent": 80.0
+          }
+        },
+        "medium": {
+          "precision": {
+            "correct": 12,
+            "total": 13,
+            "percent": 92.31
+          },
+          "recall": {
+            "correct": 12,
+            "total": 19,
+            "percent": 63.16
+          }
+        },
+        "high": {
+          "precision": {
+            "correct": 6,
+            "total": 7,
+            "percent": 85.71
+          },
+          "recall": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          }
+        },
+        "urgent": {
+          "precision": {
+            "correct": 5,
+            "total": 6,
+            "percent": 83.33
+          },
+          "recall": {
+            "correct": 5,
+            "total": 6,
+            "percent": 83.33
+          }
+        }
+      }
+    },
+    "ambiguous": {
+      "category": {
+        "correct": 8,
+        "total": 9,
+        "percent": 88.89
+      },
+      "priority": {
+        "correct": 7,
+        "total": 9,
+        "percent": 77.78
+      },
+      "order_id": {
+        "correct": 8,
+        "total": 9,
+        "percent": 88.89
+      },
+      "complete": {
+        "correct": 6,
+        "total": 9,
+        "percent": 66.67
+      },
+      "invalid_output": {
+        "correct": 0,
+        "total": 9,
+        "percent": 0.0
+      },
+      "schema_invalid": {
+        "correct": 0,
+        "total": 9,
+        "percent": 0.0
+      },
+      "schema_unobserved": {
+        "correct": 0,
+        "total": 9,
+        "percent": 0.0
+      },
+      "failed_inference": {
+        "correct": 0,
+        "total": 9,
+        "percent": 0.0
+      },
+      "transport_failure": {
+        "correct": 0,
+        "total": 9,
+        "percent": 0.0
+      },
+      "harness_failure": {
+        "correct": 0,
+        "total": 9,
+        "percent": 0.0
+      },
+      "human_review_agreement": {
+        "correct": 8,
+        "total": 9,
+        "percent": 88.89
+      },
+      "category_confusion": {
+        "delivery": {
+          "delivery": 1,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 0
+        },
+        "returns": {
+          "delivery": 0,
+          "returns": 2,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 0
+        },
+        "payments": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 2,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 0
+        },
+        "technical_support": {
+          "delivery": 1,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 1,
+          "other": 0,
+          "FAILED": 0
+        },
+        "other": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 2,
+          "FAILED": 0
+        }
+      },
+      "category_per_class": {
+        "delivery": {
+          "precision": {
+            "correct": 1,
+            "total": 2,
+            "percent": 50.0
+          },
+          "recall": {
+            "correct": 1,
+            "total": 1,
+            "percent": 100.0
+          }
+        },
+        "returns": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          }
+        },
+        "payments": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          }
+        },
+        "technical_support": {
+          "precision": {
+            "correct": 1,
+            "total": 1,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 1,
+            "total": 2,
+            "percent": 50.0
+          }
+        },
+        "other": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          }
+        }
+      },
+      "priority_confusion": {
+        "low": {
+          "low": 2,
+          "medium": 0,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 0
+        },
+        "medium": {
+          "low": 0,
+          "medium": 1,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 0
+        },
+        "high": {
+          "low": 0,
+          "medium": 2,
+          "high": 2,
+          "urgent": 0,
+          "FAILED": 0
+        },
+        "urgent": {
+          "low": 0,
+          "medium": 0,
+          "high": 0,
+          "urgent": 2,
+          "FAILED": 0
+        }
+      },
+      "priority_per_class": {
+        "low": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          }
+        },
+        "medium": {
+          "precision": {
+            "correct": 1,
+            "total": 3,
+            "percent": 33.33
+          },
+          "recall": {
+            "correct": 1,
+            "total": 1,
+            "percent": 100.0
+          }
+        },
+        "high": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 4,
+            "percent": 50.0
+          }
+        },
+        "urgent": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          }
+        }
+      }
+    },
+    "adversarial": {
+      "category": {
+        "correct": 7,
+        "total": 10,
+        "percent": 70.0
+      },
+      "priority": {
+        "correct": 7,
+        "total": 10,
+        "percent": 70.0
+      },
+      "order_id": {
+        "correct": 7,
+        "total": 10,
+        "percent": 70.0
+      },
+      "complete": {
+        "correct": 7,
+        "total": 10,
+        "percent": 70.0
+      },
+      "invalid_output": {
+        "correct": 3,
+        "total": 10,
+        "percent": 30.0
+      },
+      "schema_invalid": {
+        "correct": 0,
+        "total": 10,
+        "percent": 0.0
+      },
+      "schema_unobserved": {
+        "correct": 0,
+        "total": 10,
+        "percent": 0.0
+      },
+      "failed_inference": {
+        "correct": 3,
+        "total": 10,
+        "percent": 30.0
+      },
+      "transport_failure": {
+        "correct": 0,
+        "total": 10,
+        "percent": 0.0
+      },
+      "harness_failure": {
+        "correct": 0,
+        "total": 10,
+        "percent": 0.0
+      },
+      "human_review_agreement": {
+        "correct": 7,
+        "total": 10,
+        "percent": 70.0
+      },
+      "category_confusion": {
+        "delivery": {
+          "delivery": 1,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 1
+        },
+        "returns": {
+          "delivery": 0,
+          "returns": 1,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 1
+        },
+        "payments": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 2,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 0
+        },
+        "technical_support": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 1,
+          "other": 0,
+          "FAILED": 1
+        },
+        "other": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 2,
+          "FAILED": 0
+        }
+      },
+      "category_per_class": {
+        "delivery": {
+          "precision": {
+            "correct": 1,
+            "total": 1,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 1,
+            "total": 2,
+            "percent": 50.0
+          }
+        },
+        "returns": {
+          "precision": {
+            "correct": 1,
+            "total": 1,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 1,
+            "total": 2,
+            "percent": 50.0
+          }
+        },
+        "payments": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          }
+        },
+        "technical_support": {
+          "precision": {
+            "correct": 1,
+            "total": 1,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 1,
+            "total": 2,
+            "percent": 50.0
+          }
+        },
+        "other": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          }
+        }
+      },
+      "priority_confusion": {
+        "low": {
+          "low": 2,
+          "medium": 0,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 0
+        },
+        "medium": {
+          "low": 0,
+          "medium": 4,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 2
+        },
+        "high": {
+          "low": 0,
+          "medium": 0,
+          "high": 1,
+          "urgent": 0,
+          "FAILED": 1
+        },
+        "urgent": {
+          "low": 0,
+          "medium": 0,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 0
+        }
+      },
+      "priority_per_class": {
+        "low": {
+          "precision": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 2,
+            "total": 2,
+            "percent": 100.0
+          }
+        },
+        "medium": {
+          "precision": {
+            "correct": 4,
+            "total": 4,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 4,
+            "total": 6,
+            "percent": 66.67
+          }
+        },
+        "high": {
+          "precision": {
+            "correct": 1,
+            "total": 1,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 1,
+            "total": 2,
+            "percent": 50.0
+          }
+        },
+        "urgent": {
+          "precision": {
+            "correct": 0,
+            "total": 0,
+            "percent": null
+          },
+          "recall": {
+            "correct": 0,
+            "total": 0,
+            "percent": null
+          }
+        }
+      }
+    }
+  },
+  "by_language": {
+    "en": {
+      "category": {
+        "correct": 29,
+        "total": 30,
+        "percent": 96.67
+      },
+      "priority": {
+        "correct": 26,
+        "total": 30,
+        "percent": 86.67
+      },
+      "order_id": {
+        "correct": 29,
+        "total": 30,
+        "percent": 96.67
+      },
+      "complete": {
+        "correct": 25,
+        "total": 30,
+        "percent": 83.33
+      },
+      "invalid_output": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "schema_invalid": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "schema_unobserved": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "failed_inference": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "transport_failure": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "harness_failure": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "human_review_agreement": {
+        "correct": 29,
+        "total": 30,
+        "percent": 96.67
+      },
+      "category_confusion": {
+        "delivery": {
+          "delivery": 6,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 0
+        },
+        "returns": {
+          "delivery": 0,
+          "returns": 6,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 0
+        },
+        "payments": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 5,
+          "technical_support": 1,
+          "other": 0,
+          "FAILED": 0
+        },
+        "technical_support": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 6,
+          "other": 0,
+          "FAILED": 0
+        },
+        "other": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 6,
+          "FAILED": 0
+        }
+      },
+      "category_per_class": {
+        "delivery": {
+          "precision": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          }
+        },
+        "returns": {
+          "precision": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          }
+        },
+        "payments": {
+          "precision": {
+            "correct": 5,
+            "total": 5,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 5,
+            "total": 6,
+            "percent": 83.33
+          }
+        },
+        "technical_support": {
+          "precision": {
+            "correct": 6,
+            "total": 7,
+            "percent": 85.71
+          },
+          "recall": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          }
+        },
+        "other": {
+          "precision": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          }
+        }
+      },
+      "priority_confusion": {
+        "low": {
+          "low": 6,
+          "medium": 1,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 0
+        },
+        "medium": {
+          "low": 0,
+          "medium": 12,
+          "high": 0,
+          "urgent": 1,
+          "FAILED": 0
+        },
+        "high": {
+          "low": 0,
+          "medium": 1,
+          "high": 5,
+          "urgent": 0,
+          "FAILED": 0
+        },
+        "urgent": {
+          "low": 0,
+          "medium": 0,
+          "high": 1,
+          "urgent": 3,
+          "FAILED": 0
+        }
+      },
+      "priority_per_class": {
+        "low": {
+          "precision": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 6,
+            "total": 7,
+            "percent": 85.71
+          }
+        },
+        "medium": {
+          "precision": {
+            "correct": 12,
+            "total": 14,
+            "percent": 85.71
+          },
+          "recall": {
+            "correct": 12,
+            "total": 13,
+            "percent": 92.31
+          }
+        },
+        "high": {
+          "precision": {
+            "correct": 5,
+            "total": 6,
+            "percent": 83.33
+          },
+          "recall": {
+            "correct": 5,
+            "total": 6,
+            "percent": 83.33
+          }
+        },
+        "urgent": {
+          "precision": {
+            "correct": 3,
+            "total": 4,
+            "percent": 75.0
+          },
+          "recall": {
+            "correct": 3,
+            "total": 4,
+            "percent": 75.0
+          }
+        }
+      }
+    },
+    "el": {
+      "category": {
+        "correct": 19,
+        "total": 30,
+        "percent": 63.33
+      },
+      "priority": {
+        "correct": 19,
+        "total": 30,
+        "percent": 63.33
+      },
+      "order_id": {
+        "correct": 20,
+        "total": 30,
+        "percent": 66.67
+      },
+      "complete": {
+        "correct": 18,
+        "total": 30,
+        "percent": 60.0
+      },
+      "invalid_output": {
+        "correct": 10,
+        "total": 30,
+        "percent": 33.33
+      },
+      "schema_invalid": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "schema_unobserved": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "failed_inference": {
+        "correct": 10,
+        "total": 30,
+        "percent": 33.33
+      },
+      "transport_failure": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "harness_failure": {
+        "correct": 0,
+        "total": 30,
+        "percent": 0.0
+      },
+      "human_review_agreement": {
+        "correct": 20,
+        "total": 30,
+        "percent": 66.67
+      },
+      "category_confusion": {
+        "delivery": {
+          "delivery": 3,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 3
+        },
+        "returns": {
+          "delivery": 0,
+          "returns": 1,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 5
+        },
+        "payments": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 5,
+          "technical_support": 0,
+          "other": 0,
+          "FAILED": 1
+        },
+        "technical_support": {
+          "delivery": 1,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 4,
+          "other": 0,
+          "FAILED": 1
+        },
+        "other": {
+          "delivery": 0,
+          "returns": 0,
+          "payments": 0,
+          "technical_support": 0,
+          "other": 6,
+          "FAILED": 0
+        }
+      },
+      "category_per_class": {
+        "delivery": {
+          "precision": {
+            "correct": 3,
+            "total": 4,
+            "percent": 75.0
+          },
+          "recall": {
+            "correct": 3,
+            "total": 6,
+            "percent": 50.0
+          }
+        },
+        "returns": {
+          "precision": {
+            "correct": 1,
+            "total": 1,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 1,
+            "total": 6,
+            "percent": 16.67
+          }
+        },
+        "payments": {
+          "precision": {
+            "correct": 5,
+            "total": 5,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 5,
+            "total": 6,
+            "percent": 83.33
+          }
+        },
+        "technical_support": {
+          "precision": {
+            "correct": 4,
+            "total": 4,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 4,
+            "total": 6,
+            "percent": 66.67
+          }
+        },
+        "other": {
+          "precision": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          }
+        }
+      },
+      "priority_confusion": {
+        "low": {
+          "low": 6,
+          "medium": 0,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 1
+        },
+        "medium": {
+          "low": 0,
+          "medium": 5,
+          "high": 0,
+          "urgent": 0,
+          "FAILED": 8
+        },
+        "high": {
+          "low": 0,
+          "medium": 1,
+          "high": 4,
+          "urgent": 0,
+          "FAILED": 1
+        },
+        "urgent": {
+          "low": 0,
+          "medium": 0,
+          "high": 0,
+          "urgent": 4,
+          "FAILED": 0
+        }
+      },
+      "priority_per_class": {
+        "low": {
+          "precision": {
+            "correct": 6,
+            "total": 6,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 6,
+            "total": 7,
+            "percent": 85.71
+          }
+        },
+        "medium": {
+          "precision": {
+            "correct": 5,
+            "total": 6,
+            "percent": 83.33
+          },
+          "recall": {
+            "correct": 5,
+            "total": 13,
+            "percent": 38.46
+          }
+        },
+        "high": {
+          "precision": {
+            "correct": 4,
+            "total": 4,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 4,
+            "total": 6,
+            "percent": 66.67
+          }
+        },
+        "urgent": {
+          "precision": {
+            "correct": 4,
+            "total": 4,
+            "percent": 100.0
+          },
+          "recall": {
+            "correct": 4,
+            "total": 4,
+            "percent": 100.0
+          }
+        }
+      }
+    }
+  },
+  "accepted_only_diagnostic": {
+    "category": {
+      "correct": 48,
+      "total": 50,
+      "percent": 96.0
+    },
+    "priority": {
+      "correct": 45,
+      "total": 50,
+      "percent": 90.0
+    },
+    "order_id": {
+      "correct": 49,
+      "total": 50,
+      "percent": 98.0
+    },
+    "complete": {
+      "correct": 43,
+      "total": 50,
+      "percent": 86.0
+    },
+    "invalid_output": {
+      "correct": 0,
+      "total": 50,
+      "percent": 0.0
+    },
+    "schema_invalid": {
+      "correct": 0,
+      "total": 50,
+      "percent": 0.0
+    },
+    "schema_unobserved": {
+      "correct": 0,
+      "total": 50,
+      "percent": 0.0
+    },
+    "failed_inference": {
+      "correct": 0,
+      "total": 50,
+      "percent": 0.0
+    },
+    "transport_failure": {
+      "correct": 0,
+      "total": 50,
+      "percent": 0.0
+    },
+    "harness_failure": {
+      "correct": 0,
+      "total": 50,
+      "percent": 0.0
+    },
+    "human_review_agreement": {
+      "correct": 49,
+      "total": 50,
+      "percent": 98.0
+    },
+    "category_confusion": {
+      "delivery": {
+        "delivery": 9,
+        "returns": 0,
+        "payments": 0,
+        "technical_support": 0,
+        "other": 0,
+        "FAILED": 0
+      },
+      "returns": {
+        "delivery": 0,
+        "returns": 7,
+        "payments": 0,
+        "technical_support": 0,
+        "other": 0,
+        "FAILED": 0
+      },
+      "payments": {
+        "delivery": 0,
+        "returns": 0,
+        "payments": 10,
+        "technical_support": 1,
+        "other": 0,
+        "FAILED": 0
+      },
+      "technical_support": {
+        "delivery": 1,
+        "returns": 0,
+        "payments": 0,
+        "technical_support": 10,
+        "other": 0,
+        "FAILED": 0
+      },
+      "other": {
+        "delivery": 0,
+        "returns": 0,
+        "payments": 0,
+        "technical_support": 0,
+        "other": 12,
+        "FAILED": 0
+      }
+    },
+    "category_per_class": {
+      "delivery": {
+        "precision": {
+          "correct": 9,
+          "total": 10,
+          "percent": 90.0
+        },
+        "recall": {
+          "correct": 9,
+          "total": 9,
+          "percent": 100.0
+        }
+      },
+      "returns": {
+        "precision": {
+          "correct": 7,
+          "total": 7,
+          "percent": 100.0
+        },
+        "recall": {
+          "correct": 7,
+          "total": 7,
+          "percent": 100.0
+        }
+      },
+      "payments": {
+        "precision": {
+          "correct": 10,
+          "total": 10,
+          "percent": 100.0
+        },
+        "recall": {
+          "correct": 10,
+          "total": 11,
+          "percent": 90.91
+        }
+      },
+      "technical_support": {
+        "precision": {
+          "correct": 10,
+          "total": 11,
+          "percent": 90.91
+        },
+        "recall": {
+          "correct": 10,
+          "total": 11,
+          "percent": 90.91
+        }
+      },
+      "other": {
+        "precision": {
+          "correct": 12,
+          "total": 12,
+          "percent": 100.0
+        },
+        "recall": {
+          "correct": 12,
+          "total": 12,
+          "percent": 100.0
+        }
+      }
+    },
+    "priority_confusion": {
+      "low": {
+        "low": 12,
+        "medium": 1,
+        "high": 0,
+        "urgent": 0,
+        "FAILED": 0
+      },
+      "medium": {
+        "low": 0,
+        "medium": 17,
+        "high": 0,
+        "urgent": 1,
+        "FAILED": 0
+      },
+      "high": {
+        "low": 0,
+        "medium": 2,
+        "high": 9,
+        "urgent": 0,
+        "FAILED": 0
+      },
+      "urgent": {
+        "low": 0,
+        "medium": 0,
+        "high": 1,
+        "urgent": 7,
+        "FAILED": 0
+      }
+    },
+    "priority_per_class": {
+      "low": {
+        "precision": {
+          "correct": 12,
+          "total": 12,
+          "percent": 100.0
+        },
+        "recall": {
+          "correct": 12,
+          "total": 13,
+          "percent": 92.31
+        }
+      },
+      "medium": {
+        "precision": {
+          "correct": 17,
+          "total": 20,
+          "percent": 85.0
+        },
+        "recall": {
+          "correct": 17,
+          "total": 18,
+          "percent": 94.44
+        }
+      },
+      "high": {
+        "precision": {
+          "correct": 9,
+          "total": 10,
+          "percent": 90.0
+        },
+        "recall": {
+          "correct": 9,
+          "total": 11,
+          "percent": 81.82
+        }
+      },
+      "urgent": {
+        "precision": {
+          "correct": 7,
+          "total": 8,
+          "percent": 87.5
+        },
+        "recall": {
+          "correct": 7,
+          "total": 8,
+          "percent": 87.5
+        }
+      }
+    }
+  },
+  "performance": {
+    "classification_all": {
+      "attempts": 60,
+      "failed": 10,
+      "p50_seconds": 0.8193,
+      "p95_seconds": 1.2075,
+      "mean_seconds": 0.9465,
+      "min_seconds": 0.637963,
+      "max_seconds": 4.324361,
+      "input_tokens": 66302,
+      "output_tokens": 4411,
+      "model_load_seconds_total": 4.037172
+    },
+    "classification_steady": {
+      "attempts": 59,
+      "failed": 10,
+      "p50_seconds": 0.8122,
+      "p95_seconds": 1.1935,
+      "mean_seconds": 0.8893,
+      "min_seconds": 0.637963,
+      "max_seconds": 1.380213,
+      "input_tokens": 65199,
+      "output_tokens": 4346,
+      "model_load_seconds_total": 0.643635
+    },
+    "reply_all": {
+      "attempts": 12,
+      "failed": 0,
+      "p50_seconds": 0.7894,
+      "p95_seconds": 0.8601,
+      "mean_seconds": 0.7883,
+      "min_seconds": 0.711378,
+      "max_seconds": 0.875559,
+      "input_tokens": 10547,
+      "output_tokens": 676,
+      "model_load_seconds_total": 0.122541
+    },
+    "reply_after_first": {
+      "attempts": 11,
+      "failed": 0,
+      "p50_seconds": 0.7843,
+      "p95_seconds": 0.8297,
+      "mean_seconds": 0.7804,
+      "min_seconds": 0.711378,
+      "max_seconds": 0.847417,
+      "input_tokens": 9655,
+      "output_tokens": 624,
+      "model_load_seconds_total": 0.111622
+    }
+  },
+  "reply_accepted": {
+    "passed": 12,
+    "total": 12
+  },
+  "reply_automated_checks": {
+    "passed": 12,
+    "total": 12
+  }
+}

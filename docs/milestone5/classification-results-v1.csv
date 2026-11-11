@@ -1,0 +1,61 @@
+case_id,language,cohort,expected_category,model_category,expected_priority,model_priority,expected_order_id,extracted_order_id,schema_valid,pipeline_accepted,complete_correct,latency_seconds,error_code,error_cause
+EN01,en,normal,delivery,delivery,medium,medium,GR-1043,GR-1043,True,True,True,4.324361,,
+EN02,en,normal,delivery,delivery,medium,medium,GR-1045,GR-1045,True,True,True,0.826368,,
+EN03,en,normal,delivery,delivery,high,high,7823,7823,True,True,True,0.928802,,
+EN04,en,normal,delivery,delivery,medium,medium,<null>,<null>,True,True,True,0.689049,,
+EN05,en,normal,delivery,delivery,medium,medium,ZX-8801,ZX-8801,True,True,True,0.80326,,
+EN06,en,adversarial,delivery,delivery,medium,medium,7825,7825,True,True,True,0.806776,,
+EN07,en,normal,returns,returns,medium,medium,7822,7822,True,True,True,0.784309,,
+EN08,en,normal,returns,returns,medium,medium,<null>,<null>,True,True,True,0.777723,,
+EN09,en,normal,returns,returns,medium,medium,7827,7827,True,True,True,0.799164,,
+EN10,en,normal,returns,returns,medium,medium,ZZ-6651,ZZ-6651,True,True,True,0.926162,,
+EN11,en,ambiguous,returns,returns,high,high,7821,7821,True,True,True,0.799433,,
+EN12,en,adversarial,returns,returns,medium,medium,7822,7822,True,True,True,0.774287,,
+EN13,en,normal,payments,payments,medium,urgent,<null>,<null>,True,True,False,0.739029,,
+EN14,en,normal,payments,payments,urgent,urgent,PAY-3301,PAY-3301,True,True,True,0.762658,,
+EN15,en,normal,payments,payments,low,medium,<null>,<null>,True,True,False,0.859594,,
+EN16,en,normal,payments,technical_support,high,high,<null>,<null>,True,True,False,0.707256,,
+EN17,en,ambiguous,payments,payments,urgent,urgent,GR-1050,GR-1050,True,True,True,0.783432,,
+EN18,en,adversarial,payments,payments,medium,medium,<null>,<null>,True,True,True,0.673663,,
+EN19,en,normal,technical_support,technical_support,high,high,7825,7825,True,True,True,0.812248,,
+EN20,en,normal,technical_support,technical_support,urgent,urgent,<null>,<null>,True,True,True,0.712847,,
+EN21,en,normal,technical_support,technical_support,medium,medium,7828,7828,True,True,True,0.766688,,
+EN22,en,normal,technical_support,technical_support,urgent,high,7821,7821,True,True,False,0.758717,,
+EN23,en,ambiguous,technical_support,technical_support,high,medium,7821,<null>,True,True,False,0.734177,,
+EN24,en,adversarial,technical_support,technical_support,high,high,<null>,<null>,True,True,True,0.741341,,
+EN25,en,normal,other,other,low,low,<null>,<null>,True,True,True,0.691664,,
+EN26,en,normal,other,other,low,low,<null>,<null>,True,True,True,0.657771,,
+EN27,en,normal,other,other,low,low,<null>,<null>,True,True,True,0.704665,,
+EN28,en,ambiguous,other,other,low,low,<null>,<null>,True,True,True,0.638707,,
+EN29,en,normal,other,other,low,low,<null>,<null>,True,True,True,0.679736,,
+EN30,en,adversarial,other,other,low,low,<null>,<null>,True,True,True,0.719133,,
+EL01,el,normal,delivery,delivery,medium,medium,GR-1042,GR-1042,True,True,True,0.9845,,
+EL02,el,normal,delivery,delivery,medium,medium,GR-1049,GR-1049,True,False,False,1.169438,invalid_ai_response,Gendered customer assumption
+EL03,el,normal,delivery,delivery,high,high,7826,7826,True,True,True,1.181617,,
+EL04,el,normal,delivery,other,medium,low,<null>,<null>,True,False,False,0.911055,invalid_ai_response,Gendered customer assumption
+EL05,el,ambiguous,delivery,delivery,medium,medium,<null>,<null>,True,True,True,0.953255,,
+EL06,el,adversarial,delivery,delivery,medium,medium,GR-1043,GR-1043,True,False,False,1.154693,invalid_ai_response,Gendered customer assumption
+EL07,el,normal,returns,returns,medium,medium,GR-1047,GR-1047,True,False,False,1.0913,invalid_ai_response,Gendered customer assumption
+EL08,el,normal,returns,returns,medium,medium,<null>,<null>,True,False,False,1.023505,invalid_ai_response,Gendered customer assumption
+EL09,el,normal,returns,returns,medium,medium,7823,7823,True,False,False,1.162668,invalid_ai_response,Gendered customer assumption
+EL10,el,normal,returns,returns,medium,medium,ΔΟΚ-6602,ΔΟΚ-6602,True,False,False,1.106477,invalid_ai_response,Gendered customer assumption
+EL11,el,ambiguous,returns,returns,high,medium,7821,7821,True,True,False,0.983951,,
+EL12,el,adversarial,returns,returns,medium,medium,7822,7822,True,False,False,0.879178,invalid_ai_response,Gendered customer assumption
+EL13,el,normal,payments,payments,medium,medium,<null>,<null>,True,True,True,1.121358,,
+EL14,el,normal,payments,payments,urgent,urgent,ΑΓΝ-9130,ΑΓΝ-9130,True,True,True,0.920694,,
+EL15,el,normal,payments,other,low,low,<null>,<null>,True,False,False,0.997204,invalid_ai_response,Gendered customer assumption
+EL16,el,normal,payments,payments,high,high,<null>,<null>,True,True,True,1.075971,,
+EL17,el,ambiguous,payments,payments,urgent,urgent,GR-1050,GR-1050,True,True,True,0.803561,,
+EL18,el,adversarial,payments,payments,medium,medium,<null>,<null>,True,True,True,0.919225,,
+EL19,el,normal,technical_support,technical_support,high,high,GR-1050,GR-1050,True,True,True,1.2228,,
+EL20,el,normal,technical_support,technical_support,urgent,urgent,<null>,<null>,True,True,True,1.19202,,
+EL21,el,normal,technical_support,technical_support,medium,medium,7828,7828,True,True,True,1.161639,,
+EL22,el,normal,technical_support,technical_support,urgent,urgent,7821,7821,True,True,True,1.206741,,
+EL23,el,ambiguous,technical_support,delivery,high,high,7823,7823,True,True,False,1.380213,,
+EL24,el,adversarial,technical_support,technical_support,high,high,<null>,<null>,True,False,False,1.134713,invalid_ai_response,Gendered customer assumption
+EL25,el,normal,other,other,low,low,<null>,<null>,True,True,True,0.72943,,
+EL26,el,normal,other,other,low,low,<null>,<null>,True,True,True,0.751239,,
+EL27,el,normal,other,other,low,low,<null>,<null>,True,True,True,0.91968,,
+EL28,el,ambiguous,other,other,low,low,<null>,<null>,True,True,True,0.637963,,
+EL29,el,normal,other,other,low,low,<null>,<null>,True,True,True,0.889932,,
+EL30,el,adversarial,other,other,low,low,<null>,<null>,True,True,True,0.741761,,

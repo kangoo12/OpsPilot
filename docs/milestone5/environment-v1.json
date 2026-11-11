@@ -1,0 +1,92 @@
+{
+  "started_at": "2026-11-11T13:28:35.866647+00:00",
+  "dataset_sha256": {
+    "classification-v1.json": "72d70d35f9b1705e5e7deb1004d792219c05e1c993ba9f040f61e672f7994227",
+    "replies-v1.json": "1b8cdc3f4869a7b3c91c81cb6f378db27e1f2010d040bf8b902820eca77e2c2d"
+  },
+  "source_sha256": {
+    "backend/app/classifier.py": "abed4b2bc74219895f65a6b74ef28c6e94e19a0387616ecd4e7f099cfbbfa955",
+    "backend/app/reply_generator.py": "ad0babbadd67c808cb931f9c3135f0c24c3bf22af8b08df5d5eb8f5e3dbeb31a",
+    "backend/app/consistency.py": "9fa2ad188a8a89baf62210a15e06dba5f71e4ab23baa73f2deae3b812ad752d4",
+    "backend/app/orders.py": "8676e89534b4811bfe6efb40dc5717cda3fb326144aaf766110e176d521d23bf",
+    "backend/app/workflow.py": "146275339012c0ab02dc9dad9f115c97250c38d94e5efb0e602889c3fdb421f4",
+    "backend/app/workflow_common.py": "2ff3f85e04cf0b5893534dc6b503d578041c9fd08be5e32679afc51a998c9f4f"
+  },
+  "model": "qwen3.5:9b",
+  "serial": true,
+  "retries": 0,
+  "classification_timeout_seconds": 120.0,
+  "reply_timeout_seconds": 120.0,
+  "python": "3.13.17",
+  "os": "Windows 11",
+  "architecture": "AMD64",
+  "packages": {
+    "sqlalchemy": "2.1.8",
+    "sqlmodel": "0.0.48",
+    "httpx": "0.28.1",
+    "pydantic": "2.14.3"
+  },
+  "hardware": {
+    "gpu": [],
+    "cpu": [],
+    "memory_bytes": null
+  },
+  "ollama": {
+    "version": "0.40.16"
+  },
+  "model_release": [
+    {
+      "name": "qwen3.5:9b",
+      "model": "qwen3.5:9b",
+      "modified_at": "2026-11-10T20:15:31.5629202+02:00",
+      "size": 6550825550,
+      "digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+      "details": {
+        "parent_model": "model.gguf",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "9.0B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 4096,
+        "runner": "llamacpp"
+      },
+      "capabilities": [
+        "completion",
+        "vision",
+        "tools",
+        "thinking"
+      ]
+    }
+  ],
+  "initial_residency": {
+    "models": []
+  },
+  "model_details": {
+    "details": {
+      "parent_model": "model.gguf",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "9.0B",
+      "quantization_level": "Q4_K_M",
+      "runner": "llamacpp"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ],
+    "parameters": "presence_penalty               1.5\ntemperature                    1\ntop_k                          20\ntop_p                          0.95"
+  },
+  "finished_at": "2026-11-11T13:29:43.133270+00:00",
+  "original_tables_unchanged": true,
+  "qa_tables_unchanged_after_seeding": true,
+  "sources_unchanged": true
+}

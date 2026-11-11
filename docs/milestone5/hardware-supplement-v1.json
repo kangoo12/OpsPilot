@@ -1,0 +1,17 @@
+{
+  "observed_at": "2026-11-11T13:32:39.275102+00:00",
+  "cpu_identifier": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
+  "logical_processors": 32,
+  "total_physical_memory_bytes": 34274340864,
+  "gpu_csv": "NVIDIA GeForce RTX 5070 Ti, 16303, 621.14",
+  "gpu_columns": [
+    "name",
+    "memory_total_MiB",
+    "driver_version"
+  ],
+  "limitations": [
+    "Windows WMI/CIM CPU/GPU/RAM query denied with HRESULT 0x80041003; initial environment capture contains empty fields.",
+    "Supplement uses read-only processor environment metadata, GlobalMemoryStatusEx and NVIDIA nvidia-smi. No serial numbers, hostname, username, MAC addresses or credentials captured.",
+    "No control over background application load, power settings or OS scheduling."
+  ]
+}
