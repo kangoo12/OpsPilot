@@ -460,6 +460,34 @@ The backend requirements apply `constraints.txt` to reproduce the verified packa
 versions. The frontend uses `package-lock.json`; use `npm.cmd ci` for a clean,
 repeatable reinstall after the initial setup.
 
+### SQLAlchemy blocked by Windows Application Control
+
+On November 11, 2026, Code Integrity events 3033/3077 identified policy
+`VerifiedAndReputableDesktop` (`{0283ac0f-fff1-49ae-ada1-8a933130cad6}`) blocking
+`sqlalchemy/util/_immutabledict_cy.cp313-win_amd64.pyd`. All 270 installed SQLAlchemy
+package files matched the hash-verified official Windows wheel byte-for-byte.
+The events identify the enforcement policy, but do not establish why enforcement
+first affected this installation after the reboot.
+
+The supported repair replaces only SQLAlchemy inside the project virtual
+environment with its official **2.1.8 pure-Python wheel**. It preserves the pinned
+version and other dependencies; Windows security settings stay unchanged.
+SQLAlchemy's optional native acceleration is absent in this installation.
+If recreating the virtual environment reproduces this issue, stop the backend
+and run from `F:\Projects\OpsPilot`:
+
+```powershell
+.\backend\.venv\Scripts\python.exe -m pip install --no-deps --no-cache-dir --force-reinstall "https://files.pythonhosted.org/packages/a3/1e/6eba6770b626a991e58de306385d414b9f3ae780ae60c61aa1d0841dcaaf/sqlalchemy-2.1.8-py3-none-any.whl#sha256=69aea77b5d8a64e95d01fd7ec54985c84b4a8ef3cac3108e9271145441400c1b"
+.\backend\.venv\Scripts\python.exe -c "import sqlalchemy; print(sqlalchemy.__version__)"
+.\backend\.venv\Scripts\python.exe -m pip check
+```
+
+Sources: [official PyPI release](https://pypi.org/project/SQLAlchemy/2.1.8/)
+and [SQLAlchemy installation documentation](https://docs.sqlalchemy.org/en/21/intro.html#building-the-cython-extensions).
+This repair passed all **213 backend tests** and localhost startup/health checks
+against an isolated SQLite copy. Read-only fingerprints confirmed every original
+database table was unchanged; all dependency versions were also unchanged.
+
 ## Milestone 1 verification
 
 Verified on Windows on November 10, 2026:
