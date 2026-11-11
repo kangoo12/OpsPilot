@@ -53,6 +53,31 @@ async function show() {
 }
 
 describe('verified orders and suggested replies', () => {
+  it('keeps unsaved draft edits mounted across workspace tabs with keyboard navigation', async () => {
+    vi.mocked(listDrafts).mockResolvedValue({ items: [draft], total: 1 })
+    render(<TicketSupport ticket={ticket} workspace overview={<p>Original ticket overview</p>} />)
+    fireEvent.click(screen.getByRole('tab', { name: 'AI Reply' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit reply' }))
+    const editor = screen.getByRole('textbox', { name: 'Reply draft content' })
+    fireEvent.change(editor, { target: { value: 'Unsaved human correction' } })
+    fireEvent.click(screen.getByRole('tab', { name: 'Overview' }))
+    expect(screen.getByText('Original ticket overview')).toBeTruthy()
+    fireEvent.keyDown(screen.getByRole('tab', { name: 'Overview' }), { key: 'ArrowRight' })
+    expect(document.activeElement).toBe(screen.getByRole('tab', { name: 'Order Details' }))
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowRight' })
+    expect((screen.getByRole('textbox', { name: 'Reply draft content' }) as HTMLTextAreaElement).value).toBe('Unsaved human correction')
+    expect(listDrafts).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps consistency warnings visible across every workspace tab', async () => {
+    vi.mocked(getTicketOrder).mockResolvedValue({ ...order, consistency: conflict })
+    render(<TicketSupport ticket={ticket} workspace />)
+    await screen.findByRole('alert', { name: 'Order consistency warning' })
+    for (const label of ['Order Details', 'AI Reply', 'Activity History', 'Overview']) {
+      fireEvent.click(screen.getByRole('tab', { name: label }))
+      expect(screen.getByRole('alert', { name: 'Order consistency warning' }).closest('[hidden]')).toBeNull()
+    }
+  })
   it('shows material discrepancies and both sources without assuming a cause', async () => {
     vi.mocked(getTicketOrder).mockResolvedValue({ ...order, consistency: conflict })
     await show()

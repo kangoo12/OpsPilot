@@ -51,6 +51,11 @@ describe('connection checks', () => {
 })
 
 describe('ticket requests', () => {
+  it('encodes the selected ticket sort', async () => {
+    const mock = respond({})
+    await listTickets(0, undefined, '', {}, 'updated')
+    expect(mock.mock.calls[0][0]).toBe('/api/tickets?limit=20&offset=0&sort=updated')
+  })
   it('keeps order lookups and reply generation behind the backend', async () => {
     const mock = respond({})
     await getTicketOrder('ticket-id')

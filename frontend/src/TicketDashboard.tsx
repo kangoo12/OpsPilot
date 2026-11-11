@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { categories, priorities, createTicket, getTicket, listTickets, MAX_MESSAGE_LENGTH, statusLabels, type Category, type Priority, type Ticket, type TicketPage, type TicketFilters } from './api'
+import { categories, priorities, createTicket, getTicket, listTickets, MAX_MESSAGE_LENGTH, sortLabels, statusLabels, type Category, type Priority, type Ticket, type TicketPage, type TicketFilters, type TicketSort } from './api'
 import TicketSupport from './TicketSupport'
 
 const categoryLabels: Record<Category, string> = {
@@ -47,6 +47,7 @@ function TicketDetails({ ticket }: { ticket: Ticket }) {
 
 export default function TicketDashboard() {
   const [message, setMessage] = useState('')
+  const [composeOpen, setComposeOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
   const [notice, setNotice] = useState('')
@@ -55,6 +56,7 @@ export default function TicketDashboard() {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [filters, setFilters] = useState<TicketFilters>({})
+  const [sort, setSort] = useState<TicketSort>('newest')
   const hasFilters = Object.values(filters).some(Boolean)
   const searchTerm = search.trim()
   const [revision, setRevision] = useState(0)
@@ -85,7 +87,7 @@ export default function TicketDashboard() {
     setListError('')
     if (searchTerm !== debouncedSearch) return
     const controller = new AbortController()
-    void listTickets(offset, controller.signal, debouncedSearch, filters).then(result => {
+    void listTickets(offset, controller.signal, debouncedSearch, filters, sort).then(result => {
       if (controller.signal.aborted) return
       if (offset > 0 && result.items.length === 0) { setOffset(0); return }
       setPage(result)
@@ -93,7 +95,7 @@ export default function TicketDashboard() {
       if (!controller.signal.aborted) setListError(errorMessage(error))
     }).finally(() => { if (!controller.signal.aborted) setListLoading(false) })
     return () => controller.abort()
-  }, [offset, revision, searchTerm, debouncedSearch, filters])
+  }, [offset, revision, searchTerm, debouncedSearch, filters, sort])
 
   useEffect(() => {
     if (!selectedId) return
@@ -136,6 +138,10 @@ export default function TicketDashboard() {
 
   return (
     <div className="mt-6 space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-xl font-semibold text-slate-950">Smart Inbox</h1>
+        <button type="button" aria-expanded={composeOpen} aria-controls="message-composer" onClick={() => setComposeOpen(value => !value)} className={`${button} bg-indigo-600 text-white hover:bg-indigo-700`}>New customer message</button>
+      </div>
       <section aria-label="Ticket counts" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {([['Total tickets', page?.counts.total], ['New', page?.counts.new], ['High priority', page?.counts.high], ['Urgent', page?.counts.urgent]] as const).map(([label, value]) => (
           <div key={label} className="rounded-xl border border-slate-200 bg-white p-4">
@@ -145,7 +151,7 @@ export default function TicketDashboard() {
         ))}
       </section>
 
-      <section aria-labelledby="message-heading" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section id="message-composer" hidden={!composeOpen} aria-labelledby="message-heading" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <h2 id="message-heading" className="text-lg font-semibold text-slate-900">Classify a customer message</h2>
         <p className="mt-1 text-sm leading-6 text-slate-500">Paste a message in Greek or English. Local AI identifies the issue and priority, then saves a new ticket.</p>
         <form onSubmit={event => { void submit(event) }} className="mt-5" aria-busy={submitting}>
@@ -170,7 +176,7 @@ export default function TicketDashboard() {
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
         <section aria-labelledby="tickets-heading" className="min-w-0 rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-6">
-            <div><h2 id="tickets-heading" className="text-lg font-semibold text-slate-900">Tickets</h2><p className="mt-1 text-xs text-slate-500">Newest first · saved on this computer</p></div>
+            <div><h2 id="tickets-heading" className="text-lg font-semibold text-slate-900">Tickets</h2><p className="mt-1 text-xs text-slate-500">{sortLabels[sort]} · saved on this computer</p></div>
             <button type="button" disabled={listLoading} onClick={() => setRevision(value => value + 1)} className={secondaryButton}>Refresh tickets</button>
           </div>
           <div className="border-b border-slate-100 p-5">
@@ -201,12 +207,17 @@ export default function TicketDashboard() {
               ))}
             </div>
             {hasFilters && <button type="button" onClick={() => { setOffset(0); setFilters({}) }} className={`mt-3 ${secondaryButton}`}>Clear filters</button>}
+            <label className="mt-3 block text-xs font-medium text-slate-700">Sort tickets
+              <select value={sort} onChange={event => { setOffset(0); setSort(event.target.value as TicketSort) }} className="ml-2 max-w-full rounded-lg border border-slate-300 bg-white p-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                {Object.entries(sortLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            </label>
             {!listLoading && !listError && page && <p role="status" className="mt-2 text-xs text-slate-500">{page.counts.total} {debouncedSearch || hasFilters ? 'matching tickets' : 'tickets'}</p>}
           </div>
           {listError && <p role="alert" className="m-5 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">{listError} {page ? 'Showing the last loaded tickets and counts.' : ''}</p>}
           {listLoading && <p role="status" className="p-6 text-sm text-slate-500">Loading tickets…</p>}
           {!listLoading && !listError && page?.items.length === 0 && <p className="p-8 text-center text-sm leading-6 text-slate-500">{debouncedSearch || hasFilters ? 'No results found. Try another search or clear the search and filters.' : 'No tickets yet. Submit a customer message to get started.'}</p>}
-          <ul aria-label="Saved tickets" className="divide-y divide-slate-100">
+          <ul aria-label="Saved tickets" className="max-h-[55vh] overflow-y-auto divide-y divide-slate-100">
             {page?.items.map(ticket => (
               <li key={ticket.id}>
                 <button type="button" aria-label={`View ticket ${ticket.id}`} aria-pressed={selectedId === ticket.id}
@@ -229,7 +240,7 @@ export default function TicketDashboard() {
         <div className="min-w-0">
           {detailLoading && <p role="status" className="mb-3 text-sm text-slate-500">Loading ticket details…</p>}
           {detailError && <div role="alert" className="mb-3 rounded-lg bg-rose-50 p-4 text-sm text-rose-800">{detailError}<button type="button" onClick={() => setDetailRevision(value => value + 1)} className="ml-3 underline">Retry details</button></div>}
-          {selected ? <div className="space-y-4"><TicketDetails ticket={selected} /><TicketSupport key={selected.id} ticket={selected} onOrderChanged={() => { setRevision(value => value + 1); setDetailRevision(value => value + 1) }} /></div> : !detailLoading && <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-sm leading-6 text-slate-500">Select a ticket to view its message, verified order details, and suggested replies.</div>}
+          {selected ? <TicketSupport key={selected.id} ticket={selected} workspace overview={<TicketDetails ticket={selected} />} onOrderChanged={() => { setRevision(value => value + 1); setDetailRevision(value => value + 1) }} /> : !detailLoading && <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-sm leading-6 text-slate-500">Select a ticket to view its message, verified order details, and suggested replies.</div>}
         </div>
       </div>
     </div>

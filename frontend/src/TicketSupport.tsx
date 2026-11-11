@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { createReplyDraft, getSupportPolicies, getTicketOrder, getWorkflow, listDrafts, setTicketOrder, type DraftPage, type ReplyDraft, type SupportPolicies, type Ticket, type TicketOrder, type WorkflowState } from './api'
 import DraftReviewPanel from './DraftReviewPanel'
-import TicketWorkflowPanel from './TicketWorkflowPanel'
+import TicketWorkflowPanel, { Activity } from './TicketWorkflowPanel'
+import WorkspaceTabs, { type WorkspaceTab } from './WorkspaceTabs'
 
 const button = 'rounded-lg px-3 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-50'
 const panel = 'rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6'
@@ -9,7 +10,8 @@ const eligibility = { review_available: 'Available for review — not an approva
 function errorText(error: unknown) { return error instanceof Error ? error.message : 'The request failed. Please try again.' }
 function date(value: string) { return new Date(`${value}T12:00:00`).toLocaleDateString(undefined, { dateStyle: 'medium' }) }
 
-export default function TicketSupport({ ticket, onOrderChanged }: { ticket: Ticket; onOrderChanged?: () => void }) {
+export default function TicketSupport({ ticket, onOrderChanged, overview, workspace = false }: { ticket: Ticket; onOrderChanged?: () => void; overview?: ReactNode; workspace?: boolean }) {
+  const [tab, setTab] = useState<WorkspaceTab>('overview')
   const [order, setOrder] = useState<TicketOrder | null>(null)
   const [reference, setReference] = useState('')
   const [orderLoading, setOrderLoading] = useState(true)
@@ -106,8 +108,10 @@ export default function TicketSupport({ ticket, onOrderChanged }: { ticket: Tick
 
   return (
     <div className="space-y-4">
-      <TicketWorkflowPanel ticketId={ticket.id} state={workflow} loading={workflowLoading} error={workflowError} revision={actionRevision + revision}
-        onChanged={() => { setRevision(value => value + 1); setActionRevision(value => value + 1); onOrderChanged?.() }} />
+      {workspace && <WorkspaceTabs active={tab} onChange={setTab} idPrefix={`workspace-${ticket.id}`} />}
+      {workspace && !order?.consistency?.requires_human_review && (ticket.requires_human_review || workflow?.consistency.requires_human_review) && <p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">Human Review Required. Verify the order details before approving a reply.</p>}
+      {workspace && unsafeHistorical && <p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">Selected historical draft contains conflicting order facts. Do not use without review.</p>}
+      {workspace && (orderError || workflowError) && <p role="alert" className="text-sm text-rose-800">{orderError || workflowError}</p>}
       {order?.consistency?.requires_human_review && <aside role="alert" aria-label="Order consistency warning" className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950">
         <p className="font-semibold">{discrepancy ? 'Order discrepancy — human review required' : 'Order verification — human review required'}</p>
         <ul className="mt-2 list-disc space-y-2 pl-4 text-xs leading-5">{order.consistency.issues.map(issue => <li key={issue.code}>
@@ -116,9 +120,14 @@ export default function TicketSupport({ ticket, onOrderChanged }: { ticket: Tick
         </li>)}</ul>
         {discrepancy && <p className="mt-2 text-xs leading-5">Neither source has been reconciled. Suggested replies will ask for clarification and omit disputed order facts. No explanation or correction has been assumed.</p>}
       </aside>}
+      <div id={`workspace-${ticket.id}-overview-panel`} aria-labelledby={workspace ? `workspace-${ticket.id}-overview` : undefined} hidden={workspace && tab !== 'overview'} role={workspace ? 'tabpanel' : undefined} aria-label={workspace ? 'Overview' : undefined} className="space-y-4">
+        {overview}
+        <TicketWorkflowPanel ticketId={ticket.id} state={workflow} loading={workflowLoading} error={workflowError} revision={actionRevision + revision} showActivity={!workspace}
+          onChanged={() => { setRevision(value => value + 1); setActionRevision(value => value + 1); onOrderChanged?.() }} />
+      </div>
       <div className="flex justify-end"><button type="button" disabled={generating || saving || orderLoading || draftLoading}
         className={`${button} text-indigo-700 hover:bg-indigo-50`} onClick={refresh}>Refresh order & drafts</button></div>
-      <section aria-label="Order details" className={panel}>
+      <section id={`workspace-${ticket.id}-order-panel`} aria-labelledby={workspace ? `workspace-${ticket.id}-order` : undefined} hidden={workspace && tab !== 'order'} role={workspace ? 'tabpanel' : undefined} aria-label="Order details" className={panel}>
         <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-base font-semibold text-slate-900">Order Details</h3><span className="rounded-full bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700">Fictional demo data</span></div>
         {orderLoading && <p role="status" className="mt-3 text-sm text-slate-500">Looking up verified order details…</p>}
         {orderError && <p role="alert" className="mt-3 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">{orderError}</p>}
@@ -147,7 +156,7 @@ export default function TicketSupport({ ticket, onOrderChanged }: { ticket: Tick
           <p className="mt-2 text-xs leading-5 text-slate-500">A correction is saved for this ticket. The original extraction stays unchanged. Clear the field to use no order reference.</p>
         </form>
       </section>
-      <section aria-label="AI suggested reply" className={panel}>
+      <section id={`workspace-${ticket.id}-reply-panel`} aria-labelledby={workspace ? `workspace-${ticket.id}-reply` : undefined} hidden={workspace && tab !== 'reply'} role={workspace ? 'tabpanel' : undefined} aria-label="AI suggested reply" className={panel}>
         <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-base font-semibold text-slate-900">AI Suggested Reply</h3><span className={`rounded-full px-2 py-1 text-xs font-semibold ${selectedDraft?.status === 'approved' ? 'bg-emerald-50 text-emerald-800' : selectedDraft?.status === 'rejected' ? 'bg-rose-50 text-rose-800' : 'bg-amber-50 text-amber-900'}`}>{selectedDraft?.status === 'approved' ? 'Approved' : selectedDraft?.status === 'rejected' ? 'Rejected' : 'Pending human review'}</span></div>
         <p className="mt-2 text-xs leading-5 text-slate-500">Review every draft before approval. Approving never sends a message or resolves the ticket.</p>
         <button type="button" disabled={generating || saving || orderLoading || draftLoading || !order || !!orderError || !!draftError || referenceDirty || reviewDirty}
@@ -176,6 +185,9 @@ export default function TicketSupport({ ticket, onOrderChanged }: { ticket: Tick
         {policiesError && <p role="alert" className="mt-3 text-xs text-amber-900">{policiesError}</p>}
         {policies && <details className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500"><summary className="cursor-pointer font-medium">Fictional company policies</summary><ul className="mt-2 list-disc space-y-2 pl-4 leading-5">{policies.policies.map(policy => <li key={policy}>{policy}</li>)}</ul></details>}
       </section>
+      {workspace && <section id={`workspace-${ticket.id}-activity-panel`} aria-labelledby={`workspace-${ticket.id}-activity`} hidden={tab !== 'activity'} role="tabpanel" aria-label="Activity History" className={panel}>
+        {tab === 'activity' && <Activity ticketId={ticket.id} revision={actionRevision + revision} expanded />}
+      </section>}
     </div>
   )
 }

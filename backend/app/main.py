@@ -16,6 +16,7 @@ from app.drafts import router as drafts_router
 from app.workflow import router as workflow_router
 from app.migrations import migrate_database
 from app.tickets import get_ollama_client, router as tickets_router
+from app.analytics import router as analytics_router
 
 
 class BackendHealth(BaseModel):
@@ -68,6 +69,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(orders_router)
     app.include_router(drafts_router)
     app.include_router(workflow_router)
+    app.include_router(analytics_router)
 
     @app.exception_handler(SQLAlchemyError)
     async def database_error(request: Request, exc: SQLAlchemyError):

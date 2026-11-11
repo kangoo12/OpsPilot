@@ -108,10 +108,13 @@ export function createTicket(message: string): Promise<Ticket> {
 }
 
 export type TicketFilters = { category?: Category | ''; priority?: Priority | ''; status?: TicketStatus | '' }
+export const sortLabels = { newest: 'Newest first', oldest: 'Oldest first', priority_high: 'Highest priority first', priority_low: 'Lowest priority first', updated: 'Recently updated first' }
+export type TicketSort = keyof typeof sortLabels
 
-export function listTickets(offset = 0, signal?: AbortSignal, search = '', filters: TicketFilters = {}): Promise<TicketPage> {
+export function listTickets(offset = 0, signal?: AbortSignal, search = '', filters: TicketFilters = {}, sort: TicketSort = 'newest'): Promise<TicketPage> {
   const query = new URLSearchParams({ limit: '20', offset: String(offset) })
   if (search.trim()) query.set('search', search.trim())
+  if (sort !== 'newest') query.set('sort', sort)
   for (const [key, value] of Object.entries(filters)) {
     if (value) query.set(key, value)
   }
@@ -237,4 +240,15 @@ export function getDraftRevisions(ticketId: string, draftId: string, signal?: Ab
 }
 export function getActivity(ticketId: string, offset = 0, signal?: AbortSignal): Promise<ActivityPage> {
   return ticketRequest(`/api/tickets/${encodeURIComponent(ticketId)}/activity?limit=30&offset=${offset}`, { signal })
+}
+
+export type Analytics = {
+  generated_at: string; total_tickets: number
+  by_category: Record<Category, number>; by_priority: Record<Priority, number>; by_status: Record<TicketStatus, number>
+  human_review_tickets: number; draft_decisions: { approved: number; rejected: number }
+  volume: { date: string; count: number }[]
+  resolution_time: { average_seconds: number | null; measured_tickets: number; unavailable_tickets: number }
+}
+export function getAnalytics(signal?: AbortSignal): Promise<Analytics> {
+  return ticketRequest('/api/analytics', { signal }, { failure: 'Cannot load analytics. Check the backend and retry.' })
 }

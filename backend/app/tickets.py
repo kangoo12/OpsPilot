@@ -3,7 +3,7 @@ from uuid import UUID
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from sqlalchemy import func, or_
+from sqlalchemy import case, func, or_
 from sqlmodel import Session, select
 from starlette.concurrency import run_in_threadpool
 
@@ -11,7 +11,7 @@ from app.classifier import ai_error, classify_message
 from app.models import Ticket, TicketOrderReference
 from app.orders import ticket_read
 from app.workflow_common import audit
-from app.workflow_models import TicketWorkflow
+from app.workflow_models import AuditEvent, TicketWorkflow
 from app.schemas import Category, Priority, TicketCounts, TicketCreate, TicketPage, TicketRead, TicketStatus
 
 router = APIRouter(prefix="/api/tickets", tags=["tickets"])
@@ -56,6 +56,7 @@ def list_tickets(
     category: Category | Literal[""] | None = None,
     priority: Priority | Literal[""] | None = None,
     status: TicketStatus | Literal[""] | None = None,
+    sort: Literal["newest", "oldest", "priority_high", "priority_low", "updated"] = "newest",
 ):
     term = (search or "").strip()
     current_status = func.coalesce(TicketWorkflow.status, Ticket.status)
@@ -74,6 +75,17 @@ def list_tickets(
             Ticket.id.in_(select(TicketOrderReference.ticket_id).where(
                 TicketOrderReference.order_id.icontains(term, autoescape=True))),
         ))
+    priority_rank = case({"low": 0, "medium": 1, "high": 2, "urgent": 3}, value=Ticket.priority)
+    updated = select(func.max(AuditEvent.created_at)).where(
+        AuditEvent.ticket_id == Ticket.id, AuditEvent.event_type != "order_reference_imported",
+    ).correlate(Ticket).scalar_subquery()
+    ordering = {
+        "newest": (Ticket.created_at.desc(), Ticket.id.desc()),
+        "oldest": (Ticket.created_at.asc(), Ticket.id.asc()),
+        "priority_high": (priority_rank.desc(), Ticket.created_at.desc(), Ticket.id.desc()),
+        "priority_low": (priority_rank.asc(), Ticket.created_at.desc(), Ticket.id.desc()),
+        "updated": (func.max(Ticket.created_at, func.coalesce(updated, Ticket.created_at)).desc(), Ticket.created_at.desc(), Ticket.id.desc()),
+    }[sort]
     with Session(request.app.state.engine) as session:
         def count(*extra_conditions):
             return session.exec(select(func.count(Ticket.id)).outerjoin(TicketWorkflow, TicketWorkflow.ticket_id == Ticket.id).where(*conditions, *extra_conditions)).one()
@@ -82,7 +94,7 @@ def list_tickets(
             total=count(), new=count(current_status == TicketStatus.new),
             high=count(Ticket.priority == Priority.high), urgent=count(Ticket.priority == Priority.urgent),
         )
-        tickets = session.exec(select(Ticket).outerjoin(TicketWorkflow, TicketWorkflow.ticket_id == Ticket.id).where(*conditions).order_by(Ticket.created_at.desc(), Ticket.id.desc()).offset(offset).limit(limit)).all()
+        tickets = session.exec(select(Ticket).outerjoin(TicketWorkflow, TicketWorkflow.ticket_id == Ticket.id).where(*conditions).order_by(*ordering).offset(offset).limit(limit)).all()
         return TicketPage(items=[ticket_read(session, ticket) for ticket in tickets], counts=counts, limit=limit, offset=offset)
 
 

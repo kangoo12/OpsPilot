@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": [
+    "Combined search/filters/sorting and matching count",
+    "Real local Qwen generation; pending edit preserved across tabs/navigation; approval, activity and ticket status preserved",
+    "Real analytics counts; responsive desktop and mobile layouts without horizontal overflow"
+  ],
+  "browserErrors": [],
+  "generatedDraft": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #DEMO-LAMP-9001 (LumaLite desk lamp) as in transit. The recorded estimated delivery date is 2026-11-14. This is an estimate, not a delivery guarantee.\n\nPlease let us know if you need further clarification about this order.\n\nWe are here to help with any further questions."
+}

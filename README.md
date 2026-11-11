@@ -1,12 +1,13 @@
 # OpsPilot
 
-Local AI customer support automation. Milestone 3B adds human draft review,
-immutable approvals, revision history, ticket statuses and an audit timeline to
-Greek/English classification, verified synthetic orders and grounded replies.
+Local AI customer support automation. Milestone 4.5 adds a sortable Smart Inbox,
+tabbed ticket workspace and local analytics to human draft review, immutable
+approvals, revision history, statuses, verified synthetic orders and grounded
+Greek/English classification and replies.
 Inference uses local
 `qwen3.5:9b` exclusively.
 
-Paste a message, select **Classify & save ticket**, and review the saved ticket's
+Open **New customer message**, paste a message, select **Classify & save ticket**, and review the saved ticket's
 category, priority, order ID (when explicitly referenced), intent, and reason.
 The dashboard includes service health, counts, a paginated ticket list, refresh,
 and individual ticket details. Each ticket starts with status `new`. Select a ticket
@@ -16,7 +17,7 @@ or regenerate it. Approval sends nothing and does not resolve a ticket. Ticket
 status changes are separate, explicit operator actions.
 
 All AI connections stay on this computer. There are no cloud inference APIs,
-external fonts, analytics, or paid services. Dependency installation needs internet
+external fonts, telemetry, or paid services. Dependency installation needs internet
 access; normal app operation uses only local services.
 
 ## Requirements
@@ -349,6 +350,101 @@ server; keep the original file and backup if a migration reports an error.
 Audit entries store IDs, versions, status changes and necessary review reasons.
 Original messages are not duplicated into the audit log, and no credentials are
 collected. Revision content is retained because it is necessary for review history.
+
+## Smart Inbox and analytics (Milestone 4.5)
+
+The compact workspace navigation switches between **Smart Inbox** and **Analytics**.
+Inbox state, the selected ticket and pending draft edits remain mounted when
+navigating. **New customer message** opens the existing classification form.
+The inbox keeps search, category/priority/status filters and sorting above its
+scrollable, paginated list. Clearing filters preserves the search and sort choice.
+
+The selected ticket has keyboard-accessible **Overview**, **Order Details**,
+**AI Reply**, and **Activity History** tabs. Overview includes the original ticket
+and manual status/discrepancy workflow. Reply editing, review decisions, regeneration
+and revision history use the existing components and backend safety checks.
+Current discrepancy and unsafe historical draft warnings remain outside the tab
+panels. Tab changes preserve unsaved reply text; switching to a different ticket
+still opens that ticket's own workspace. Approval never sends or resolves anything.
+
+### Sorting API
+
+`GET /api/tickets` accepts `sort=newest` (default), `oldest`, `priority_high`,
+`priority_low`, or `updated`, together with existing search and filters. Sorting
+runs before pagination; counts describe all matching tickets. Invalid values
+return HTTP 422. Priority order is low, medium, high, urgent. Equal priorities
+use newest creation first, then descending ticket UUID. Newest/oldest use creation
+time and UUID in the same direction. Recently updated uses the latest recorded
+audit-event time or ticket creation, followed by newest creation and UUID; it
+excludes imported order-reference events whose original change time is unknown.
+It does not infer unrecorded historical changes. No schema changes were needed.
+
+### Analytics API and metric definitions
+
+`GET /api/analytics?days=30` is read-only. `days` accepts 1–366; invalid values
+return HTTP 422. Metrics cover the **configured database only**, independent of
+inbox search/filters. Normal startup uses `data/opspilot.db`; no other SQLite files
+are discovered, opened or merged, so QA databases are excluded from the normal
+dashboard. Refresh Analytics or revisit it to include later workflow changes.
+
+- Total/category/priority counts aggregate stored ticket rows. Zero-valued enum
+  groups are included.
+- Status counts use current workflow state, falling back to the ticket's original
+  status for historical rows. New vs resolved uses those current counts.
+- Human review counts use the same current order-reference and consistency checks
+  as ticket reads, including missing/unknown orders and conflicting statements.
+  Documenting a discrepancy does not erase this flag. This calculation streams
+  message/reference/order data on the backend; the frontend never downloads all tickets.
+- Approved/rejected drafts count distinct draft IDs by their current review state.
+  Multiple revision-history entries for one ID do not add decisions. A separately
+  approved child draft is intentionally another reviewed draft.
+- Volume counts tickets created on each UTC date in the selected window, including
+  today. Missing days are zero; older tickets remain in the all-time KPI counts.
+- Average resolution time measures elapsed seconds from creation to the **latest
+  recorded resolution** for currently resolved tickets. Reopened tickets are
+  excluded. Missing, negative or future resolution timestamps are excluded and
+  reported as unavailable. With no reliable measurements, the API returns null
+  and the UI displays **Not available yet**. This is total elapsed time, including
+  any earlier reopened period, not operator handling time.
+
+Charts have textual counts and an expandable daily-values table. All inference
+remains local through `qwen3.5:9b`; analytics needs no AI inference or new dependency.
+
+### Isolated Milestone 4.5 browser verification
+
+The one-run smoke test uses a **fresh** `.cache/milestone45/qa.db`, guarded by a
+unique seeded ticket and exact localhost ports. It refuses an existing QA file
+at seeding time and never resets a database. To reproduce in a fresh checkout,
+first run from the project root:
+
+```powershell
+.\backend\.venv\Scripts\python.exe backend/scripts/seed_milestone45_qa.py
+```
+
+Then start the QA backend and frontend in separate terminals:
+
+```powershell
+cd F:\Projects\OpsPilot\backend
+$env:DATABASE_PATH = '.cache/milestone45/qa.db'
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8015
+```
+
+```powershell
+cd F:\Projects\OpsPilot\frontend
+$env:BACKEND_URL = 'http://127.0.0.1:8015'
+npm.cmd run dev -- --port 5185
+```
+
+With local Ollama running, use a third terminal:
+
+```powershell
+cd F:\Projects\OpsPilot\frontend
+npm.cmd run test:smoke:4.5
+```
+
+Screenshots, original database fingerprints, QA seed metadata and results stay
+under ignored `.cache/milestone45/`. Stop QA servers with Ctrl+C; use new terminal
+sessions for normal startup so their QA-only environment variables do not carry over.
 
 ## Tests and build
 

@@ -1,0 +1,45 @@
+{
+  "all_tables_unchanged": true,
+  "tables": {
+    "auditevent": {
+      "rows": 11,
+      "sha256": "cf5b91a59ea872cce4605c595c33ab5e97fc1755af4952d3478caf05da8c5667"
+    },
+    "discrepancyresolution": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "draftreview": {
+      "rows": 3,
+      "sha256": "217c0df7f608d6ff862e3360167d3dcf8876c7959a5cd35f689f471d6dbf6ed4"
+    },
+    "draftrevision": {
+      "rows": 5,
+      "sha256": "07df90ddbccc0466804b4b7816e89a7b66d7024864f42e4397dc8abba6b10172"
+    },
+    "order": {
+      "rows": 19,
+      "sha256": "fdd0e879a6ffde020f4e8db0084c6b54dfe4edc9ae8567557c8d755ff417e8e3"
+    },
+    "replydraft": {
+      "rows": 3,
+      "sha256": "17e4202d2ab0502e349fe2aa64f6a39f3fc2152484027a8ebed0baef2515e27a"
+    },
+    "schemamigration": {
+      "rows": 1,
+      "sha256": "f4fca39ab590ac8e256af5acc6b76e25f482546b4296e4076556c77023c31a76"
+    },
+    "ticket": {
+      "rows": 5,
+      "sha256": "623e0ea4e82ad40a6949a0401e17b44be28866c2af5be67b71635bfba8345af2"
+    },
+    "ticketorderreference": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "ticketworkflow": {
+      "rows": 5,
+      "sha256": "c7a0b52d87b579181cea70fcb5023de9057a533ece9f326bc84ecb28159fd7ac"
+    }
+  }
+}

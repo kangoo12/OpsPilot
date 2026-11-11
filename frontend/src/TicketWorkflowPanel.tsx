@@ -10,8 +10,8 @@ const eventLabels: Record<string, string> = {
   draft_revision_created: 'Pending revision created', discrepancy_documented: 'Human discrepancy review documented',
 }
 
-function Activity({ ticketId, revision }: { ticketId: string; revision: number }) {
-  const [open, setOpen] = useState(false)
+export function Activity({ ticketId, revision, expanded = false }: { ticketId: string; revision: number; expanded?: boolean }) {
+  const [open, setOpen] = useState(expanded)
   const [items, setItems] = useState<ActivityEvent[]>([])
   const [total, setTotal] = useState(0)
   const [error, setError] = useState('')
@@ -28,7 +28,7 @@ function Activity({ ticketId, revision }: { ticketId: string; revision: number }
       .finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => controller.abort()
   }, [ticketId, revision, open, offset])
-  return <details onToggle={event => setOpen(event.currentTarget.open)} className="mt-4 border-t border-slate-100 pt-3 text-sm">
+  return <details open={open} onToggle={event => setOpen(event.currentTarget.open)} className="mt-4 border-t border-slate-100 pt-3 text-sm">
     <summary className="cursor-pointer font-medium text-slate-700">Activity History</summary>
     {loading && <p role="status" className="mt-3 text-xs text-slate-500">Loading activity…</p>}
     {error && <p role="alert" className="mt-3 text-xs text-rose-700">{error}</p>}
@@ -46,8 +46,8 @@ function Activity({ ticketId, revision }: { ticketId: string; revision: number }
   </details>
 }
 
-export default function TicketWorkflowPanel({ ticketId, state, loading, error, revision, onChanged }: {
-  ticketId: string; state: WorkflowState | null; loading: boolean; error: string; revision: number; onChanged: () => void
+export default function TicketWorkflowPanel({ ticketId, state, loading, error, revision, onChanged, showActivity = true }: {
+  ticketId: string; state: WorkflowState | null; loading: boolean; error: string; revision: number; onChanged: () => void; showActivity?: boolean
 }) {
   const [target, setTarget] = useState<TicketStatus>('new')
   const [dialog, setDialog] = useState<'status' | 'resolution' | null>(null)
@@ -88,7 +88,7 @@ export default function TicketWorkflowPanel({ ticketId, state, loading, error, r
     </>}
     {actionError && !dialog && <p role="alert" className="mt-3 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">{actionError}</p>}
     {notice && <p role="status" className="mt-3 text-sm text-emerald-800">{notice}</p>}
-    <Activity ticketId={ticketId} revision={revision} />
+    {showActivity && <Activity ticketId={ticketId} revision={revision} />}
     {dialog && state && <ConfirmDialog title={dialog === 'status' ? 'Confirm ticket status change' : 'Document human discrepancy review'} busy={busy}
       confirmLabel={dialog === 'status' ? 'Confirm status change' : 'Confirm documentation'} onCancel={() => { setDialog(null); setActionError('') }} onConfirm={() => { void confirm() }}>
       {dialog === 'status' ? <p>Change from {statusLabels[state.status]} to {statusLabels[target]}? This does not send a message or change any draft review decision.</p> : <>
