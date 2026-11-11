@@ -147,7 +147,7 @@ def test_return_eligibility_never_becomes_refund_approval(app):
         text = response.json()["reply_text"]
         assert "does not approve a return or refund" in text
         assert "30 days" in text
-        assert "Please describe the reason" in text
+        assert "any missing details about the return reason" in text
 
 
 def test_delivery_reply_cannot_add_unrelated_returns_or_warranty_facts(app):

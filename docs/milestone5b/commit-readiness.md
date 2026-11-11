@@ -1,0 +1,93 @@
+# GITHUB COMMIT READINESS — Milestone 5B
+
+Reviewed actual status/diffs, every changed/new public file and relevant ignored
+artifacts on November 11, 2026. A is a publication/privacy classification, not a
+claim of production-grade behavior. The classifier change needs functional review
+in C because the frozen evaluation exposed a summary-language regression.
+
+## A. SAFE TO COMMIT
+
+| Exact repository-relative path | Reason |
+| --- | --- |
+| `backend/app/customer_data.py` | Focused text/evidence helpers, with documented finite-mask limitations; no private data or credentials. |
+| `backend/app/reply_generator.py` | Grounded v3 reply material, conditional security guidance and reduced repetition; keeps strict validation and no real actions. Human semantic approval remains required. |
+| `backend/benchmarks/milestone5b.py` | Local-only serial frozen runner, explicit isolation checks, no overwrites/retries or production writes. |
+| `backend/benchmarks/report5b.py` | Reproducible postprocessing only, with failures and language-regression diagnostics retained. |
+| `backend/tests/test_ai_quality.py` | Synthetic safety/usefulness regressions; no real inference or customer content. |
+| `backend/tests/test_benchmark_5b.py` | Dataset, isolation and freeze tests; no model calls. |
+| `backend/tests/test_support.py` | One intentionally changed prose assertion; refund/eligibility safety checks are preserved. |
+| `docs/milestone5b/heldout-v1.json` | 40 new fictional messages and independently authored, frozen expectations. |
+| `docs/milestone5b/reply-scenarios-v1.json` | 12 fictional scenarios; preserves the known N06 expectation error as measured evidence, not corrected scoring. |
+| `docs/milestone5b/root-causes.md` | Pre-evaluation reasoning and scope, not private customer data. |
+| `docs/milestone5b/reply-rubric.md` | Fixed objective limits and pending human semantic rubric. |
+| `docs/milestone5b/freeze-v1.json` | Relative source/evidence paths and hashes, no raw private database fingerprints or secrets. |
+| `docs/milestone5b/environment-v1.json` | Local model/version/digest/timing and integrity metadata, no new workstation hardware profile or personal host identifiers. |
+| `docs/milestone5b/results-v1.jsonl` | Necessary raw evidence from 112 synthetic cases, including failures and actual model outputs; not production logs. |
+| `docs/milestone5b/classification-results-v1.csv` | All 100 classification rows with expected/raw/accepted labels, latency and language proxy; no real customers or spreadsheet formulas. |
+| `docs/milestone5b/metrics-v1.json` | Reproducible aggregate measurements and confusion matrices; no private inputs. |
+| `docs/milestone5b/reply-review-v1.json` | Actual fictional replies and explicitly pending semantic ratings; nothing approved/sent. |
+| `docs/milestone5b/report.md` | Honest results, regressions, fixture error and qualified readiness recommendation. |
+| `docs/milestone5b/commit-readiness.md` | This exact-path review. |
+
+## B. DO NOT COMMIT
+
+Task-specific local files:
+
+| Exact repository-relative path | Reason / ignore rule |
+| --- | --- |
+| `.cache/milestone5b/baseline-lock.json` | Original database-derived fingerprints and private pre-work bookkeeping; `.cache/`. |
+| `.cache/milestone5b/original-fingerprints.json` | Local database integrity evidence, unnecessary for public Git; `.cache/`. |
+| `.cache/milestone5b/evaluation-v1.db` | Generated synthetic SQLite QA database; `.cache/` and `*.db`. |
+| `.cache/milestone5b/greek-failure-review.json` | Temporary inspection copy of existing synthetic 5A evidence; `.cache/`. |
+| `.cache/milestone5b/reply-inspection.json` | Temporary duplicate of published synthetic replies; `.cache/`. |
+| `.cache/milestone5b/commit-scan.json` | Temporary file/content review diagnostics; `.cache/`. |
+| `backend/app/__pycache__/customer_data.cpython-313.pyc` | Generated helper bytecode; `__pycache__/`, `*.py[cod]`. |
+| `backend/app/__pycache__/classifier.cpython-313.pyc` | Generated classifier bytecode; same rules. |
+| `backend/app/__pycache__/reply_generator.cpython-313.pyc` | Generated renderer bytecode; same rules. |
+| `backend/benchmarks/__pycache__/milestone5b.cpython-313.pyc` | Generated benchmark bytecode; same rules. |
+| `backend/tests/__pycache__/test_ai_quality.cpython-313-pytest-9.2.0.pyc` | Generated test bytecode; same rules. |
+| `backend/tests/__pycache__/test_benchmark_5b.cpython-313-pytest-9.2.0.pyc` | Generated test bytecode; same rules. |
+| `backend/tests/__pycache__/test_support.cpython-313-pytest-9.2.0.pyc` | Generated test bytecode; same rules. |
+
+Existing local-only paths remain excluded: `.env` (private configuration),
+`data/opspilot.db` (original demo/user records), `data/backups/` (backups),
+`backend/.venv/`, `frontend/node_modules/` (installed dependencies),
+`backend/.pytest-tmp/`, `backend/.pytest_cache/` (test DBs/caches),
+`backend/app/__pycache__/`, `backend/benchmarks/__pycache__/`,
+`backend/tests/__pycache__/` (all remaining generated bytecode), and
+`frontend/dist/` (generated build output). Directory paths here deliberately cover
+their generated contents; they are not suggestions to stage individual artifacts.
+
+## C. MANUAL REVIEW NEEDED
+
+| Exact repository-relative path | Reason |
+| --- | --- |
+| `backend/app/classifier.py` | Privacy-safe code, but the frozen implementation gives Greek summaries for several English inputs and still misses one urgent electric-shock classification. Review the functional tradeoff before treating the change as bilingual-demo-ready. No post-holdout tuning or rollback has been hidden. |
+| `docs/milestone5/hardware-supplement-v1.json` | Existing **tracked, unchanged** 5A workstation profile. CPU-family/thread, RAM, GPU and driver details deserve publication review; ignore rules do not remove already tracked material. Do not delete or rewrite it automatically. |
+
+## Actual checks
+
+- Git status/diff covers only the A/C proposed changes above; the existing hardware
+  profile is separately flagged despite being unchanged. No frontend changes,
+  dependency changes, original 5A edits or unrelated features were included.
+- `git ls-files -ci --exclude-standard` shows no tracked ignored artifacts. Relevant
+  private/generated paths were checked with `git check-ignore`. `.gitignore`
+  already covers them; no ignore changes were necessary.
+- All proposed public files were reviewed and scanned for common private/API keys,
+  bearer tokens, credential assignments, email addresses and user-home/absolute
+  workspace paths. No candidate secrets, real customer content or personal machine
+  paths were found. Adversarial requests for secrets are clearly fictional test
+  inputs, not actual credentials. A pattern scan is not a proof of secret absence.
+- Public model metadata includes a model digest and timestamps, not credentials
+  or host/user identifiers. No new hardware probe was performed in 5B.
+- Versioned synthetic raw results/metrics are necessary measurement evidence of
+  modest size, including failed cases. Databases, bytecode and duplicate local
+  inspection dumps are unnecessary generated artifacts and remain ignored.
+- Source/expectation freeze and all original database/5A hashes were verified
+  after evaluation; no original data or failed results were changed.
+
+**Recommended commit message:**
+`Improve grounded replies and classification; add frozen Milestone 5B evaluation`
+
+Review C before publication and keep the report's measured-source context intact.
+No `git add`, `git commit` or `git push` was executed. No user files were deleted.

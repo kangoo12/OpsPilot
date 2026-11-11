@@ -1,0 +1,46 @@
+{
+  "started_at": "2026-11-11T14:48:23.464372+00:00",
+  "model": "qwen3.5:9b",
+  "serial": true,
+  "retries": 0,
+  "timeout_seconds": 120,
+  "freeze_sha256": "054ae585af87a5e22ed9bd2185685cc974037051a856ae157fb126de5169f395",
+  "ollama": {
+    "version": "0.40.16"
+  },
+  "model_release": [
+    {
+      "name": "qwen3.5:9b",
+      "model": "qwen3.5:9b",
+      "modified_at": "2026-11-10T20:15:31.5629202+02:00",
+      "size": 6550825550,
+      "digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+      "details": {
+        "parent_model": "model.gguf",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "9.0B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 4096,
+        "runner": "llamacpp"
+      },
+      "capabilities": [
+        "completion",
+        "vision",
+        "tools",
+        "thinking"
+      ]
+    }
+  ],
+  "initial_residency": {
+    "models": []
+  },
+  "finished_at": "2026-11-11T14:50:00.628377+00:00",
+  "original_tables_unchanged": true,
+  "qa_tables_unchanged": true,
+  "freeze_unchanged": true
+}

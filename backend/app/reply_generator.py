@@ -17,8 +17,9 @@ from app.consistency import check_consistency
 from app.config import Settings
 from app.schemas import TicketRead
 from app.support_schemas import TicketOrderLookup
+from app.customer_data import customer_language, normalized, security_topic, support_text
 
-POLICY_VERSION = "aster-demo-2026-11-v2"
+POLICY_VERSION = "aster-demo-2026-11-v3"
 POLICIES = [
     "Conflicting customer statements or differences between the message and order record require human review. Ask for clarification; never choose a source, assert disputed facts, or invent an explanation.",
     "Aster Shop is a fictional demo retailer. Order data is a fixed synthetic snapshot, not live tracking.",
@@ -35,15 +36,13 @@ class ReplyPlan(BaseModel):
     language: Literal["en", "el"]
     opening: Literal["thanks", "understand", "sorry"]
     fact_keys: list[str] = Field(max_length=2)
-    next_step: Literal["provide_order_id", "check_order_id", "clarify_order_details", "return_details", "fault_details", "payment_details", "describe_issue", "none"]
+    next_step: Literal["provide_order_id", "check_order_id", "clarify_order_details", "return_details", "fault_details", "payment_details", "describe_issue", "card_security", "account_security", "technical_details", "none"]
     closing: Literal["thanks", "here_to_help"]
 
 
 def message_language(message: str) -> str:
-    # Greek/English only. Fixed by the backend, so model instructions cannot change it.
-    greek = len(re.findall(r"[\u0370-\u03ff\u1f00-\u1fff]", message[:500]))
-    latin = len(re.findall(r"[A-Za-z]", message[:500]))
-    return "el" if greek >= 3 and greek >= latin else "en"
+    # Fixed by the backend; explicit output-control spans cannot dictate the language.
+    return customer_language(message)
 
 
 def reply_material(ticket: TicketRead, context: TicketOrderLookup) -> dict:
@@ -51,11 +50,28 @@ def reply_material(ticket: TicketRead, context: TicketOrderLookup) -> dict:
     el = language == "el"
     order = context.order
     consistency = check_consistency(ticket.message, order, context.reference_order_id)
+    topic = security_topic(ticket.message, ticket.category)
+    security_advice = {
+        'card': ('If you suspect unauthorized card use, contact your card provider promptly. Do not share full card numbers, passwords or security codes.', 'Αν υποψιάζεστε μη εξουσιοδοτημένη χρήση κάρτας, επικοινωνήστε άμεσα με τον πάροχο της κάρτας. Μην κοινοποιείτε πλήρη στοιχεία κάρτας, κωδικούς πρόσβασης ή κωδικούς ασφαλείας.'),
+        'account': ('For suspected account compromise, use the official account recovery and security channels. Never share passwords, recovery codes or sign-in codes here.', 'Για πιθανή παραβίαση λογαριασμού, χρησιμοποιήστε τις επίσημες διαδικασίες ανάκτησης και ασφάλειας. Μην κοινοποιείτε κωδικούς πρόσβασης, ανάκτησης ή σύνδεσης εδώ.'),
+    }
     if consistency.status == "discrepancy":
         return {"language": language, "required": [
             "Οι πληροφορίες του μηνύματός σας και τα διαθέσιμα στοιχεία παραγγελίας χρειάζονται διευκρίνιση. Δεν έχουν επιβεβαιωθεί τα σωστά στοιχεία προϊόντος και παράδοσης."
             if el else "The details in your message and the available order information need clarification. The correct product and delivery details have not been confirmed."
-        ], "optional": {}, "next_step": "clarify_order_details"}
+        ] + ([security_advice[topic][1 if el else 0]] if topic else []), "optional": {}, "next_step": "clarify_order_details"}
+    if topic:
+        return {'language': language, 'required': [security_advice[topic][1 if el else 0]],
+                'optional': {}, 'next_step': 'card_security' if topic == 'card' else 'account_security'}
+    if ticket.category == 'payments':
+        return {'language': language, 'required': [
+            'Ο έλεγχος πληρωμής δεν σημαίνει έγκριση επιστροφής χρημάτων.' if el else 'A payment review does not approve a refund.'
+        ], 'optional': {}, 'next_step': 'payment_details'}
+    non_order_technical = ticket.category == 'technical_support' and not context.reference_order_id and re.search(
+        r'\b(?:account|login|log in|website|software|app|λογαριασμ\w*|συνδεσ\w*|ιστοσελιδ\w*|λογισμικ\w*)\b', normalized(support_text(ticket.message)))
+    if not context.reference_order_id and (ticket.category == 'other' or non_order_technical):
+        return {'language': language, 'required': [], 'optional': {},
+                'next_step': 'technical_details' if non_order_technical else 'describe_issue'}
     required = []
     optional = {}
     if order:
@@ -93,9 +109,11 @@ def reply_material(ticket: TicketRead, context: TicketOrderLookup) -> dict:
             "unknown": ("Warranty eligibility has not been verified.", "Δεν έχει επιβεβαιωθεί δικαίωμα υποστήριξης εγγύησης."),
         }
         if ticket.category == "returns":
-            optional["return_eligibility"] = return_text[order.return_eligibility][1 if el else 0]
+            required.append(return_text[order.return_eligibility][1 if el else 0])
+            optional["return_eligibility"] = required[-1]
         if ticket.category == "technical_support":
-            optional["warranty_eligibility"] = warranty_text[order.warranty_eligibility][1 if el else 0]
+            required.append(warranty_text[order.warranty_eligibility][1 if el else 0])
+            optional["warranty_eligibility"] = required[-1]
     else:
         required.append(
             ("Δεν βρέθηκε επαληθευμένη καταχώριση για τον αριθμό παραγγελίας που δόθηκε." if context.reference_order_id
@@ -104,12 +122,12 @@ def reply_material(ticket: TicketRead, context: TicketOrderLookup) -> dict:
              else "There is no verified order record for this message.")
         )
 
-    if ticket.category == "returns":
+    if ticket.category == "returns" and (not order or order.return_eligibility == 'review_available'):
         optional["return_policy"] = (
             "Αιτήματα για αχρησιμοποίητα προϊόντα στην αρχική συσκευασία μπορούν να εξεταστούν εντός 30 ημερών από την παράδοση. Απαιτείται εξέταση πριν από οποιαδήποτε έγκριση."
             if el else "Return requests for unused items in their original packaging may be reviewed within 30 days of delivery. Assessment is required before any approval."
         )
-    if ticket.category == "technical_support":
+    if ticket.category == "technical_support" and not order:
         optional["warranty_policy"] = ("Η κάλυψη εγγύησης και τυχόν αποκατάσταση απαιτούν ανθρώπινη αξιολόγηση."
                                         if el else "Warranty coverage and any remedy require human assessment.")
     if ticket.category == "payments":
@@ -140,19 +158,23 @@ def render_reply(plan: ReplyPlan, material: dict) -> str:
         "clarify_order_details": ("Please confirm the order ID, the product ordered, and whether the item was delivered. Human review is needed before order-specific advice can be given.", "Παρακαλούμε επιβεβαιώστε τον αριθμό παραγγελίας, το προϊόν που παραγγείλατε και αν παραδόθηκε. Χρειάζεται ανθρώπινος έλεγχος πριν δοθούν οδηγίες για τη συγκεκριμένη παραγγελία."),
         "provide_order_id": ("Please provide your order ID so the relevant order can be identified.", "Παρακαλούμε στείλτε τον αριθμό παραγγελίας σας για να εντοπιστεί η σχετική καταχώριση."),
         "check_order_id": ("Please check the order ID on your confirmation and provide the correct reference.", "Παρακαλούμε ελέγξτε τον αριθμό στην επιβεβαίωση παραγγελίας και στείλτε τη σωστή αναφορά."),
-        "return_details": ("Please describe the reason for the return and the condition of the item and packaging so eligibility can be assessed.", "Παρακαλούμε περιγράψτε τον λόγο επιστροφής και την κατάσταση του προϊόντος και της συσκευασίας για να αξιολογηθεί το αίτημα."),
-        "fault_details": ("Please describe the fault and any troubleshooting steps you have tried so the support request can be assessed.", "Παρακαλούμε περιγράψτε τη βλάβη και τις δοκιμές που έχετε κάνει για να αξιολογηθεί το αίτημα υποστήριξης."),
-        "payment_details": ("Please provide the payment date and amount, without sharing sensitive card information, so the issue can be assessed.", "Παρακαλούμε δώστε την ημερομηνία και το ποσό πληρωμής, χωρίς ευαίσθητα στοιχεία κάρτας, για να αξιολογηθεί το ζήτημα."),
-        "describe_issue": ("Please share any additional details needed to understand your support request.", "Παρακαλούμε δώστε περισσότερες λεπτομέρειες για το αίτημα υποστήριξής σας."),
-        "none": ("Please let us know if you need further clarification about this order.", "Παρακαλούμε ενημερώστε μας αν χρειάζεστε επιπλέον διευκρινίσεις για την παραγγελία."),
+        "return_details": ("Please add any missing details about the return reason and item or packaging condition for human review.", "Παρακαλούμε συμπληρώστε όσα στοιχεία λείπουν για τον λόγο επιστροφής και την κατάσταση προϊόντος ή συσκευασίας, ώστε να εξεταστεί το αίτημα."),
+        "fault_details": ("Please add any fault symptoms or troubleshooting results not already included, so the support request can be assessed.", "Παρακαλούμε συμπληρώστε συμπτώματα βλάβης ή αποτελέσματα δοκιμών που δεν έχετε ήδη αναφέρει, ώστε να αξιολογηθεί το αίτημα."),
+        "payment_details": ("Please add any missing payment date, amount and error message, without sharing card numbers or security codes.", "Παρακαλούμε συμπληρώστε όσα στοιχεία λείπουν για ημερομηνία, ποσό και μήνυμα σφάλματος πληρωμής, χωρίς αριθμούς κάρτας ή κωδικούς ασφαλείας."),
+        "describe_issue": ("Please clarify the information you need. This workspace cannot confirm company information that has not been provided.", "Παρακαλούμε διευκρινίστε ποια πληροφορία χρειάζεστε. Δεν είναι διαθέσιμη επιβεβαίωση εταιρικών στοιχείων που δεν έχουν δοθεί σε αυτό το σύστημα."),
+        "card_security": ("If available, note the charge dates and amounts for the card provider's review; an order ID is not required for this guidance.", "Αν είναι διαθέσιμα, σημειώστε ημερομηνίες και ποσά χρεώσεων για τον έλεγχο από τον πάροχο κάρτας· δεν απαιτείται αριθμός παραγγελίας για αυτές τις οδηγίες."),
+        "account_security": ("Describe any remaining access problems without sharing secrets; an order ID is not needed for account-security guidance.", "Περιγράψτε τυχόν προβλήματα πρόσβασης χωρίς ευαίσθητα στοιχεία· δεν χρειάζεται αριθμός παραγγελίας για οδηγίες ασφάλειας λογαριασμού."),
+        "technical_details": ("Please add the error message and steps already tried, omitting passwords or sign-in codes.", "Παρακαλούμε συμπληρώστε το μήνυμα σφάλματος και τις δοκιμές που έγιναν, χωρίς κωδικούς πρόσβασης ή σύνδεσης."),
+        "none": ("", ""),
     }
     closings = {
         "thanks": ("Thank you for your patience.", "Ευχαριστούμε για την υπομονή σας."),
         "here_to_help": ("We are here to help with any further questions.", "Είμαστε στη διάθεσή σας για επιπλέον ερωτήσεις."),
     }
     index = 1 if el else 0
-    facts = material["required"] + [material["optional"][key] for key in plan.fact_keys]
-    return "\n\n".join([openings[plan.opening][index], " ".join(facts), steps[plan.next_step][index], closings[plan.closing][index]])
+    facts = list(dict.fromkeys(material["required"] + [material["optional"][key] for key in plan.fact_keys]))
+    closing = '' if plan.opening == 'thanks' and plan.closing == 'thanks' else closings[plan.closing][index]
+    return "\n\n".join(part for part in [openings[plan.opening][index], " ".join(facts), steps[plan.next_step][index], closing] if part)
 
 
 async def generate_reply(ticket: TicketRead, context: TicketOrderLookup, client: httpx.AsyncClient, settings: Settings) -> tuple[str, str]:

@@ -1,0 +1,17 @@
+{
+  "source": "docs/milestone5b/results-v1.jsonl",
+  "source_sha256": "973d818874ff1838e83a0ef0315fc373b42bcdfe86b8a488aaf7b48c3bcd53ea",
+  "case_id": "N06",
+  "verified_order_id": "GR-1046",
+  "verified_eta": null,
+  "original_assertion": "estimate_caveat",
+  "original_result": false,
+  "corrected_assertion": {
+    "version": 2,
+    "passed": true,
+    "basis": "No verified ETA exists: explicitly preserve the unknown date rather than requiring an estimate caveat."
+  },
+  "same_preserved_output": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #GR-1046 (Helio USB hub) as being processed. No estimated delivery date is available in the verified order record.\n\nWe are here to help with any further questions.",
+  "new_inference": false,
+  "explanation": "The old assertion required an estimate caveat despite no recorded ETA. Original 5B evidence and 11/12 frozen score remain unchanged; this is a separate versioned reevaluation."
+}

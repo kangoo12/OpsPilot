@@ -1,0 +1,314 @@
+[
+  {
+    "kind": "reply",
+    "case_id": "CR01",
+    "language": "en",
+    "cohort": "reply",
+    "expected": {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "7828",
+      "human_review": "consistent"
+    },
+    "accepted": true,
+    "predicted": null,
+    "schema_valid": true,
+    "output": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #7828 (Breeze compact fan) as being processed. No estimated delivery date is available in the verified order record.\n\nWe are here to help with any further questions.",
+    "output_language": "en",
+    "checks": {
+      "expected_language": true,
+      "expected_next_step": true,
+      "expected_human_review_flag": true,
+      "only_verified_calendar_dates": true,
+      "only_context_order_ids": true,
+      "no_listed_positive_action_claim": true,
+      "required_renderer_facts_present": true,
+      "original_message_preserved": true,
+      "fact_aware_eta_v2": true
+    },
+    "eta_evaluation": {
+      "version": 2,
+      "passed": true,
+      "basis": "No verified ETA exists: explicitly preserve the unknown date rather than requiring an estimate caveat."
+    },
+    "existing_guard_signals": [],
+    "semantic_review": "pending_human_review",
+    "disposition": "not_saved_not_approved_not_sent",
+    "latency_seconds": 0.857677,
+    "revision": "initial",
+    "human_semantic_review": "pending"
+  },
+  {
+    "kind": "reply",
+    "case_id": "CR02",
+    "language": "en",
+    "cohort": "reply",
+    "expected": {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "7823",
+      "human_review": "consistent"
+    },
+    "accepted": true,
+    "predicted": null,
+    "schema_valid": true,
+    "output": "Thank you for getting in touch.\n\nThe order record dated 2026-11-10 lists order #7823 (Cedar laptop stand) as being processed. The recorded estimated delivery date is 2026-11-17. This is an estimate, not a delivery guarantee.\n\nWe are here to help with any further questions.",
+    "output_language": "en",
+    "checks": {
+      "expected_language": true,
+      "expected_next_step": true,
+      "expected_human_review_flag": true,
+      "only_verified_calendar_dates": true,
+      "only_context_order_ids": true,
+      "no_listed_positive_action_claim": true,
+      "required_renderer_facts_present": true,
+      "original_message_preserved": true,
+      "fact_aware_eta_v2": true
+    },
+    "eta_evaluation": {
+      "version": 2,
+      "passed": true,
+      "basis": "Known ETA must match the verified date and remain an estimate."
+    },
+    "existing_guard_signals": [],
+    "semantic_review": "pending_human_review",
+    "disposition": "not_saved_not_approved_not_sent",
+    "latency_seconds": 0.80894,
+    "revision": "initial",
+    "human_semantic_review": "pending"
+  },
+  {
+    "kind": "reply",
+    "case_id": "CR03",
+    "language": "el",
+    "cohort": "reply",
+    "expected": {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "GR-1042",
+      "human_review": "consistent"
+    },
+    "accepted": true,
+    "predicted": null,
+    "schema_valid": true,
+    "output": "Ευχαριστούμε για την περιγραφή του ζητήματος.\n\nΣύμφωνα με την καταχώριση της 2026-11-10, η παραγγελία #GR-1042 (Aster wireless headphones) εμφανίζεται σε καθυστέρηση. Δεν υπάρχει επιβεβαιωμένη εκτιμώμενη ημερομηνία παράδοσης στην καταχώριση.\n\nΕίμαστε στη διάθεσή σας για επιπλέον ερωτήσεις.",
+    "output_language": "el",
+    "checks": {
+      "expected_language": true,
+      "expected_next_step": true,
+      "expected_human_review_flag": true,
+      "only_verified_calendar_dates": true,
+      "only_context_order_ids": true,
+      "no_listed_positive_action_claim": true,
+      "required_renderer_facts_present": true,
+      "original_message_preserved": true,
+      "fact_aware_eta_v2": true
+    },
+    "eta_evaluation": {
+      "version": 2,
+      "passed": true,
+      "basis": "No verified ETA exists: explicitly preserve the unknown date rather than requiring an estimate caveat."
+    },
+    "existing_guard_signals": [],
+    "semantic_review": "pending_human_review",
+    "disposition": "not_saved_not_approved_not_sent",
+    "latency_seconds": 0.764958,
+    "revision": "initial",
+    "human_semantic_review": "pending"
+  },
+  {
+    "kind": "reply",
+    "case_id": "CR04",
+    "language": "el",
+    "cohort": "reply",
+    "expected": {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "ΑΓΝ-7109",
+      "human_review": "unknown_order"
+    },
+    "accepted": true,
+    "predicted": null,
+    "schema_valid": true,
+    "output": "Λυπούμαστε για την ταλαιπωρία.\n\nΔεν βρέθηκε επαληθευμένη καταχώριση για τον αριθμό παραγγελίας που δόθηκε.\n\nΠαρακαλούμε ελέγξτε τον αριθμό στην επιβεβαίωση παραγγελίας και στείλτε τη σωστή αναφορά.\n\nΕίμαστε στη διάθεσή σας για επιπλέον ερωτήσεις.",
+    "output_language": "el",
+    "checks": {
+      "expected_language": true,
+      "expected_next_step": true,
+      "expected_human_review_flag": true,
+      "only_verified_calendar_dates": true,
+      "only_context_order_ids": true,
+      "no_listed_positive_action_claim": true,
+      "required_renderer_facts_present": true,
+      "original_message_preserved": true,
+      "fact_aware_eta_v2": true
+    },
+    "eta_evaluation": {
+      "version": 2,
+      "passed": true,
+      "basis": "No order-specific dates may be asserted for unknown/disputed data."
+    },
+    "existing_guard_signals": [],
+    "semantic_review": "pending_human_review",
+    "disposition": "not_saved_not_approved_not_sent",
+    "latency_seconds": 0.752997,
+    "revision": "initial",
+    "human_semantic_review": "pending"
+  },
+  {
+    "kind": "reply",
+    "case_id": "CR01",
+    "language": "en",
+    "cohort": "reply",
+    "expected": {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "7828",
+      "human_review": "consistent"
+    },
+    "accepted": true,
+    "predicted": null,
+    "schema_valid": true,
+    "output": "Thank you for explaining the issue.\n\nThe order record dated 2026-11-10 lists order #7828 (Breeze compact fan) as being processed. No estimated delivery date is available in the verified order record.\n\nWe are here to help with any further questions.",
+    "output_language": "en",
+    "checks": {
+      "expected_language": true,
+      "expected_next_step": true,
+      "expected_human_review_flag": true,
+      "only_verified_calendar_dates": true,
+      "only_context_order_ids": true,
+      "no_listed_positive_action_claim": true,
+      "required_renderer_facts_present": true,
+      "original_message_preserved": true,
+      "fact_aware_eta_v2": true
+    },
+    "eta_evaluation": {
+      "version": 2,
+      "passed": true,
+      "basis": "No verified ETA exists: explicitly preserve the unknown date rather than requiring an estimate caveat."
+    },
+    "existing_guard_signals": [],
+    "semantic_review": "pending_human_review",
+    "disposition": "not_saved_not_approved_not_sent",
+    "latency_seconds": 0.883511,
+    "revision": "followup",
+    "human_semantic_review": "pending"
+  },
+  {
+    "kind": "reply",
+    "case_id": "CR02",
+    "language": "en",
+    "cohort": "reply",
+    "expected": {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "7823",
+      "human_review": "consistent"
+    },
+    "accepted": true,
+    "predicted": null,
+    "schema_valid": true,
+    "output": "Thank you for getting in touch.\n\nThe order record dated 2026-11-10 lists order #7823 (Cedar laptop stand) as being processed. The recorded estimated delivery date is 2026-11-17. This is an estimate, not a delivery guarantee.\n\nWe are here to help with any further questions.",
+    "output_language": "en",
+    "checks": {
+      "expected_language": true,
+      "expected_next_step": true,
+      "expected_human_review_flag": true,
+      "only_verified_calendar_dates": true,
+      "only_context_order_ids": true,
+      "no_listed_positive_action_claim": true,
+      "required_renderer_facts_present": true,
+      "original_message_preserved": true,
+      "fact_aware_eta_v2": true
+    },
+    "eta_evaluation": {
+      "version": 2,
+      "passed": true,
+      "basis": "Known ETA must match the verified date and remain an estimate."
+    },
+    "existing_guard_signals": [],
+    "semantic_review": "pending_human_review",
+    "disposition": "not_saved_not_approved_not_sent",
+    "latency_seconds": 0.770876,
+    "revision": "followup",
+    "human_semantic_review": "pending"
+  },
+  {
+    "kind": "reply",
+    "case_id": "CR03",
+    "language": "el",
+    "cohort": "reply",
+    "expected": {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "GR-1042",
+      "human_review": "consistent"
+    },
+    "accepted": true,
+    "predicted": null,
+    "schema_valid": true,
+    "output": "Ευχαριστούμε για την περιγραφή του ζητήματος.\n\nΣύμφωνα με την καταχώριση της 2026-11-10, η παραγγελία #GR-1042 (Aster wireless headphones) εμφανίζεται σε καθυστέρηση. Δεν υπάρχει επιβεβαιωμένη εκτιμώμενη ημερομηνία παράδοσης στην καταχώριση.\n\nΕίμαστε στη διάθεσή σας για επιπλέον ερωτήσεις.",
+    "output_language": "el",
+    "checks": {
+      "expected_language": true,
+      "expected_next_step": true,
+      "expected_human_review_flag": true,
+      "only_verified_calendar_dates": true,
+      "only_context_order_ids": true,
+      "no_listed_positive_action_claim": true,
+      "required_renderer_facts_present": true,
+      "original_message_preserved": true,
+      "fact_aware_eta_v2": true
+    },
+    "eta_evaluation": {
+      "version": 2,
+      "passed": true,
+      "basis": "No verified ETA exists: explicitly preserve the unknown date rather than requiring an estimate caveat."
+    },
+    "existing_guard_signals": [],
+    "semantic_review": "pending_human_review",
+    "disposition": "not_saved_not_approved_not_sent",
+    "latency_seconds": 0.729764,
+    "revision": "followup",
+    "human_semantic_review": "pending"
+  },
+  {
+    "kind": "reply",
+    "case_id": "CR04",
+    "language": "el",
+    "cohort": "reply",
+    "expected": {
+      "category": "delivery",
+      "priority": "medium",
+      "order_id": "ΑΓΝ-7109",
+      "human_review": "unknown_order"
+    },
+    "accepted": true,
+    "predicted": null,
+    "schema_valid": true,
+    "output": "Λυπούμαστε για την ταλαιπωρία.\n\nΔεν βρέθηκε επαληθευμένη καταχώριση για τον αριθμό παραγγελίας που δόθηκε.\n\nΠαρακαλούμε ελέγξτε τον αριθμό στην επιβεβαίωση παραγγελίας και στείλτε τη σωστή αναφορά.\n\nΕίμαστε στη διάθεσή σας για επιπλέον ερωτήσεις.",
+    "output_language": "el",
+    "checks": {
+      "expected_language": true,
+      "expected_next_step": true,
+      "expected_human_review_flag": true,
+      "only_verified_calendar_dates": true,
+      "only_context_order_ids": true,
+      "no_listed_positive_action_claim": true,
+      "required_renderer_facts_present": true,
+      "original_message_preserved": true,
+      "fact_aware_eta_v2": true
+    },
+    "eta_evaluation": {
+      "version": 2,
+      "passed": true,
+      "basis": "No order-specific dates may be asserted for unknown/disputed data."
+    },
+    "existing_guard_signals": [],
+    "semantic_review": "pending_human_review",
+    "disposition": "not_saved_not_approved_not_sent",
+    "latency_seconds": 0.719166,
+    "revision": "followup",
+    "human_semantic_review": "pending"
+  }
+]

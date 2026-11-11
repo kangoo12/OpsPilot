@@ -118,7 +118,7 @@ def test_invalid_input_never_calls_ollama_or_saves(app, body):
 
 
 def test_message_at_length_limit_is_accepted(app):
-    mock_chat(app)
+    mock_chat(app, classification(customer_intent="Έλεγχος αιτήματος", reason="Ασαφές αίτημα χωρίς ένδειξη κινδύνου."))
     with TestClient(app) as client:
         assert client.post("/api/tickets", json={"message": "α" * 5000}).status_code == 201
 
