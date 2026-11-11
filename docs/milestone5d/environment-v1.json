@@ -1,0 +1,10 @@
+{
+  "model": "qwen3.5:9b",
+  "digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+  "ollama": {
+    "version": "0.40.16"
+  },
+  "local_only": true,
+  "serial": true,
+  "thinking": false
+}

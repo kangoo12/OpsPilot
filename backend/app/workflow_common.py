@@ -104,9 +104,14 @@ def content_blockers(content: str, context) -> list[str]:
         checked = check_consistency(content, order, context.reference_order_id)
         if checked.status == "discrepancy":
             blockers.append("The draft's product or delivery statements conflict with the verified order record.")
-        from app.classifier import order_candidates
-        if set(order_candidates(content)) - {order.id, context.reference_order_id}:
-            blockers.append("The reply refers to an order ID outside the verified context.")
+    # Documenting missing/disputed facts never authorizes an unrelated reference.
+    # The supplied ID may still be repeated to ask for clarification.
+    from app.classifier import order_candidates
+    allowed_references = {context.reference_order_id}
+    if context.order:
+        allowed_references.add(context.order.id)
+    if set(order_candidates(content)) - allowed_references:
+        blockers.append("The reply refers to an order ID outside the verified context.")
     return list(dict.fromkeys(blockers))
 
 

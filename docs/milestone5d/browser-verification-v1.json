@@ -1,0 +1,58 @@
+{
+  "source_files": {
+    ".cache/milestone5d/browser-results-resumed.json": "4d9f4d2fac007cd11a93b7d98c026184c6343d3edc5e90569a783b1bc436920d",
+    ".cache/milestone5d/browser-readonly-followup.json": "1477ac14d386f445db4653b80fed3169f64efde9f75521aa3657a1f4ebc9d3a1",
+    ".cache/milestone5d/smoke5d-before-locator-fix.mjs": "1fc59435c9b263f9dd44aa3dad4718ff334c3b4768d5caa3f35fbee485f1b644"
+  },
+  "initial_attempt": "Two real bilingual UI submissions and pagination passed; a filter locator timeout interrupted the harness. No original result file was produced by that unhandled rejection.",
+  "resumed_workflow": {
+    "passed_field": false,
+    "checks": [
+      "Backend/SQLite and local Qwen connectivity visible",
+      "English/Greek UI submissions and loading passed before locator failure; exact saved tickets verified on resume",
+      "Pagination, reset, combined search/filters, matching counts, oldest and priority sorting",
+      "Grounded real Qwen draft, edit, approval, immutable parent, pending child, rejection, real regeneration, status, audit and revision history",
+      "Material human-review warning remains visible in all workspace tabs",
+      "Untrusted HTML/script fixture renders as literal text, without execution",
+      "Analytics reflects QA rows/decisions; desktop/mobile no overflow; reload preserves ticket and all three drafts"
+    ],
+    "browser_errors": [],
+    "api_errors": [],
+    "console_errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "final_error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   'Failed to load resource: the server responded with a status of 404 (Not Found)'\n+ ]\n- []\n",
+    "request_abort_count": 24
+  },
+  "interpretation": "All seven workflow groups completed. The final console assertion failed on /favicon.ico 404. Preserve that failure; the follow-up checks the fix separately. Read request aborts accompanied React cleanup/navigation.",
+  "readonly_followup": {
+    "passed": true,
+    "errors": [],
+    "httpErrors": [],
+    "checks": [
+      "No unsolicited favicon request/error; persisted ticket and three distinct draft decisions",
+      "One explicitly simulated 503 is visible; refresh recovers without losing persisted tickets"
+    ],
+    "inducedErrors": [
+      {
+        "path": "/api/tickets",
+        "status": 503
+      },
+      "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    ]
+  },
+  "coverage": "1440x1000 and 390x844; inbox/analytics overflow checks; no new browser pass in the resumed audit session.",
+  "qa_counts": {
+    "tickets": 26,
+    "draft_decisions": {
+      "approved": 1,
+      "rejected": 1
+    },
+    "status": {
+      "new": 25,
+      "in_progress": 1,
+      "waiting_for_customer": 0,
+      "resolved": 0
+    }
+  }
+}

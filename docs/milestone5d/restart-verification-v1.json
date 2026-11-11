@@ -1,0 +1,34 @@
+{
+  "original_tables_unchanged": true,
+  "table_count": 10,
+  "historical_files_unchanged": true,
+  "historical_file_count": 40,
+  "qa_rows_match_pre_restart": true,
+  "qa_sqlite_integrity": "ok",
+  "qa_foreign_key_violations": 0,
+  "process_starts": [
+    {
+      "startup_seconds": 1.636,
+      "health": "ok",
+      "qa_sentinel_verified": true,
+      "tickets": 26,
+      "drafts_on_target": 3,
+      "status": "in_progress",
+      "approved_content_and_history_preserved": true,
+      "analytics_matches": true
+    },
+    {
+      "startup_seconds": 1.564,
+      "health": "ok",
+      "qa_sentinel_verified": true,
+      "tickets": 26,
+      "drafts_on_target": 3,
+      "status": "in_progress",
+      "approved_content_and_history_preserved": true,
+      "analytics_matches": true
+    }
+  ],
+  "inference_calls": 0,
+  "api_mutations": 0,
+  "test_servers_stopped": true
+}

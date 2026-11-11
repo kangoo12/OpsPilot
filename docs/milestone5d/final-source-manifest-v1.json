@@ -1,0 +1,35 @@
+{
+  "final_source_sha256": {
+    "backend/app/__init__.py": "966738ff9a042dc4aa221c053d10001c40191e9b0187227a61a516e3ff770645",
+    "backend/app/analytics.py": "d5fc999b20e95a7a991e34f556610f9969fb1bee7e7c9f91df56e271fc06dede",
+    "backend/app/classification_rules.py": "c0f1df334dbaae02923c9acdd6a2f8ebb37d4755fca48a0cfa56be71bf64c840",
+    "backend/app/classifier.py": "e927b9144487869bdaf6e81afdc2dce79df68d609bd0147fc5c58b7db5d8e589",
+    "backend/app/config.py": "ebebbed1ce2e63050f851de7e1e472a888b5324f1c08a21da531f3ce1286bb07",
+    "backend/app/consistency.py": "9fa2ad188a8a89baf62210a15e06dba5f71e4ab23baa73f2deae3b812ad752d4",
+    "backend/app/customer_data.py": "d13e6b89f67b4b3d3f1fba658a207b689dced79fb28c6aa641e17578a240a891",
+    "backend/app/database.py": "82986507fad238ed5c68d2064124822dd9d62f612ba252115a436d5e7b6da53d",
+    "backend/app/drafts.py": "62d88f31ecb397a76ea0f210571ca1ce27cf5554b5e0e21274129300ea38d80c",
+    "backend/app/main.py": "67edb92c7ff88ea6ac1655cf6491eab5ee57ca6b8c9fe49fd5bd211ce22a39d1",
+    "backend/app/migrations.py": "e50037675b91958a891d169c617c9462884740cd52bef2b8a7b9af425c2d0a96",
+    "backend/app/models.py": "8be54557602d011c7a3c1a364f395251b06e245a0da10c01a36173946276ffe1",
+    "backend/app/orders.py": "8676e89534b4811bfe6efb40dc5717cda3fb326144aaf766110e176d521d23bf",
+    "backend/app/reply_generator.py": "41c4403acc9edb3d37d864c628e867ebebdeb396cafd70195c7a35bdbdcff6b8",
+    "backend/app/schemas.py": "71785193775050cd441e938d2e62a3f746b17ee704eb37d9222f1562e65c2fe5",
+    "backend/app/support_schemas.py": "2e9069ccf11d6fbf9c30acce9630f8d66251bab32e3b7f77c407b69d0915577c",
+    "backend/app/tickets.py": "07e2b326c63ddbb0e964a609d0bae5da55676bd195d8c63782f8b3db8fc27f54",
+    "backend/app/workflow.py": "146275339012c0ab02dc9dad9f115c97250c38d94e5efb0e602889c3fdb421f4",
+    "backend/app/workflow_common.py": "9831c951bb773baca9405c473bc9c2ad4437827e9b6198df2d71292eadbabcf3",
+    "backend/app/workflow_models.py": "0dafc5ba37dbfebe5d90994291be76c456ab36dfa53e1cb777257a8cc1139cbd",
+    "backend/scripts/audit_milestone5d.py": "857941cf33d07cdad4f529c22a1efc5ffccd722d1768e51a3417b0a67693c77d",
+    "backend/scripts/verify_milestone5d_restart.py": "33bffde23e52707325204ed2d8d876038da7565b846a6a68c361c4d8d1c2b230",
+    "backend/tests/test_release_audit.py": "4aa74cdf06fc142b533aff75bb9dc7eba654e883bfc38941df67928fd7eaef14",
+    "frontend/index.html": "bc205ec6aaee496f17e5e759e34bf73bcdf4b9363c60abc264bf63838ed72a37",
+    "frontend/scripts/smoke5d.mjs": "29c9d7853cd21e00bd3067dc75da2103fc50c294a4309168127b56c374c40afc",
+    "frontend/scripts/verify5d.mjs": "2c7e62fc73cfa5f7dd2ca00c7c277cb3d33e3a355ac4cac050a9b584b48265a6"
+  },
+  "original_freeze_sha256": "acc79e3f46ac8b7eb6b49ba4fd1fdbaee1d6acc0e8125923050c6a6a9fc04226",
+  "changed_since_inference_freeze": [
+    "frontend/scripts/smoke5d.mjs"
+  ],
+  "explanation": "Only the browser harness changed among originally frozen files: corrected accessible-role locators, explicit timeout/rejection handling, and resume mode. Application Python, scenarios and Qwen results are unchanged. Favicon link and read-only follow-up/restart scripts were added later. Earlier freeze/results retain their historical meaning; do not rerun prepare/evaluate or overwrite them."
+}
